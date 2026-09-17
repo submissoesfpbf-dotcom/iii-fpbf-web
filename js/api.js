@@ -1,1 +1,0 @@
-const API={url:localStorage.apiUrl||'',setUrl(u){this.url=u.trim();localStorage.apiUrl=this.url;},async post(payload){if(!this.url)throw new Error('Configure a URL da API');const r=await fetch(this.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}};
