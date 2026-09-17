@@ -1,0 +1,15 @@
+{
+  "name":"III FPBF - Credenciamento",
+  "short_name":"III FPBF",
+  "description":"Credenciamento e frequência do III Fórum Paraibano de Física",
+  "start_url":"./index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#ffffff",
+  "theme_color":"#8b1e2d",
+  "orientation":"portrait-primary",
+  "icons":[
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
