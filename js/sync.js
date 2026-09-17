@@ -7,12 +7,12 @@ const SYNC={
    let sent=0;
    for(let offset=0;offset<q.length;offset+=100){
      const batch=q.slice(offset,offset+100);
-     const scans=batch.filter(x=>x.kind==='scan');
+     const scans=batch.filter(x=>x.kind==='scan'&&x.payload.subject_type!=='MONITOR');
      const registrations=batch.filter(x=>x.kind==='registration');
      const presentations=batch.filter(x=>x.kind==='presentation');
-     const monitor_scans=batch.filter(x=>x.kind==='monitor_scan');
+     const monitor_scans=batch.filter(x=>(x.kind==='monitor_scan')||(x.kind==='scan'&&x.payload.subject_type==='MONITOR'));
      const r=await API.post({
-       action:'sync_batch',token,device_id:deviceId,evento_id:'FPBF26',app_version:'2.4.0',
+       action:'sync_batch',token,device_id:deviceId,evento_id:'FPBF26',app_version:'2.5.0',
        pending_count:q.length,
        scans:scans.map(x=>x.payload),
        registrations:registrations.map(x=>x.payload),
