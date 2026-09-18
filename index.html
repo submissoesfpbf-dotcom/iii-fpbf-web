@@ -862,6 +862,28 @@ button:disabled {
     #botaoSincronizar, #botaoCancelarAtividade { min-height:48px; }
 }
 
+
+/* =========================================================
+   TUTORIAL / AJUDA E CARREGAMENTO DE AÇÕES
+   ========================================================= */
+.botao-ajuda-topo{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:20px;padding:7px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+.topo-acoes{display:flex;align-items:center;gap:7px}
+.tutorial-overlay,.acao-loading-overlay{position:fixed;inset:0;z-index:9999;background:rgba(20,20,20,.68);display:flex;align-items:center;justify-content:center;padding:16px}
+.tutorial-box{width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 18px 60px rgba(0,0,0,.3)}
+.tutorial-progresso{font-size:11px;font-weight:700;color:#8b1e2d;text-transform:uppercase;letter-spacing:.05em}
+.tutorial-icone{font-size:48px;text-align:center;margin:14px 0 8px}
+.tutorial-titulo{font-size:23px;font-weight:800;color:#711523;text-align:center;margin:0 0 10px}
+.tutorial-texto{font-size:14px;line-height:1.65;color:#555;text-align:center;white-space:pre-line}
+.tutorial-destaque{margin-top:14px;padding:12px;background:#f7f3f4;border:1px solid #eadcdf;border-radius:12px;color:#5f2932;font-size:13px;line-height:1.5;text-align:left}
+.tutorial-acoes{display:grid;grid-template-columns:auto 1fr auto;gap:8px;margin-top:20px;align-items:center}
+.tutorial-acoes button{min-height:44px;border-radius:10px;padding:10px 14px;font-weight:700;border:1px solid #ddd;background:#fff;color:#555}
+.tutorial-acoes .tutorial-proximo{background:#8b1e2d;color:#fff;border-color:#8b1e2d}
+.tutorial-pontos{text-align:center;color:#aaa;font-size:12px;letter-spacing:3px}
+.acao-loading-card{min-width:220px;max-width:88vw;background:#fff;border-radius:18px;padding:24px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.3)}
+.acao-loading-spinner{width:48px;height:48px;margin:0 auto 14px;border:5px solid #eee;border-top-color:#8b1e2d;border-radius:50%;animation:girar .75s linear infinite}
+.acao-loading-texto{font-size:14px;font-weight:700;color:#711523;line-height:1.45}
+@media(max-width:600px){.topo-acoes{gap:5px}.botao-ajuda-topo{padding:6px 8px;font-size:10px}.tutorial-overlay{padding:10px;align-items:flex-end}.tutorial-box{border-radius:20px 20px 12px 12px;padding:19px 16px;max-height:90vh}.tutorial-titulo{font-size:21px}.tutorial-icone{font-size:42px}.tutorial-acoes{grid-template-columns:auto 1fr auto;gap:5px}.tutorial-acoes button{padding:9px 10px;font-size:11px}}
+
 </style>
 </head>
 
@@ -879,9 +901,12 @@ button:disabled {
             </div>
         </div>
 
-        <div class="status-conexao">
-            <span id="bolinhaConexao" class="bolinha"></span>
-            <span id="textoConexao">Verificando</span>
+        <div class="topo-acoes">
+            <button id="botaoAjuda" class="botao-ajuda-topo" type="button" aria-label="Abrir tutorial">? Ajuda</button>
+            <div class="status-conexao">
+                <span id="bolinhaConexao" class="bolinha"></span>
+                <span id="textoConexao">Verificando</span>
+            </div>
         </div>
 
     </div>
@@ -1194,6 +1219,32 @@ button:disabled {
 
 </main>
 
+
+
+<!-- TUTORIAL DE PRIMEIRO ACESSO -->
+<div id="tutorialOverlay" class="tutorial-overlay oculto" role="dialog" aria-modal="true" aria-labelledby="tutorialTitulo">
+  <div class="tutorial-box">
+    <div id="tutorialProgresso" class="tutorial-progresso"></div>
+    <div id="tutorialIcone" class="tutorial-icone"></div>
+    <div id="tutorialTitulo" class="tutorial-titulo"></div>
+    <div id="tutorialTexto" class="tutorial-texto"></div>
+    <div id="tutorialDestaque" class="tutorial-destaque"></div>
+    <div class="tutorial-acoes">
+      <button id="tutorialPular" type="button">PULAR</button>
+      <div id="tutorialPontos" class="tutorial-pontos"></div>
+      <button id="tutorialProximo" class="tutorial-proximo" type="button">PRÓXIMO</button>
+    </div>
+    <div style="margin-top:7px;text-align:center"><button id="tutorialVoltar" type="button" style="border:0;background:transparent;color:#777;font-size:12px;padding:7px">← Voltar</button></div>
+  </div>
+</div>
+
+<!-- CARREGAMENTO DE EXPORTAÇÃO / SINCRONIZAÇÃO -->
+<div id="acaoLoadingOverlay" class="acao-loading-overlay oculto" role="status" aria-live="polite">
+  <div class="acao-loading-card">
+    <div class="acao-loading-spinner"></div>
+    <div id="acaoLoadingTexto" class="acao-loading-texto">Processando...</div>
+  </div>
+</div>
 
 <script>
 
@@ -2650,6 +2701,9 @@ async function exportarCSV() {
         return;
     }
 
+    mostrarCarregamentoAcao("Gerando arquivo CSV...");
+    await new Promise(resolve => setTimeout(resolve, 80));
+
 
     const cabecalho = [
 
@@ -2768,6 +2822,8 @@ async function exportarCSV() {
         1000
     );
 
+    esconderCarregamentoAcao();
+
 }
 
 
@@ -2867,6 +2923,8 @@ async function sincronizarLoteDrive() {
 
     botao.textContent =
         "SINCRONIZANDO...";
+
+    mostrarCarregamentoAcao("Enviando registros e gerando o CSV no servidor...");
 
 
     try {
@@ -3058,6 +3116,8 @@ async function sincronizarLoteDrive() {
 
     }
     finally {
+
+        esconderCarregamentoAcao();
 
         botao.disabled = false;
 
@@ -4005,6 +4065,65 @@ function ajustarAbasAoTamanho() {
 if(mediaMobile.addEventListener) mediaMobile.addEventListener("change", ajustarAbasAoTamanho);
 else mediaMobile.addListener(ajustarAbasAoTamanho);
 ajustarAbasAoTamanho();
+
+
+/* =========================================================
+   TUTORIAL DE PRIMEIRO ACESSO
+   ========================================================= */
+const TUTORIAL_CHAVE = "fpbf_tutorial_concluido_v1";
+let tutorialEtapa = 0;
+
+const tutorialEtapas = [
+ {icone:"👋",titulo:"Bem-vindo ao Credenciamento",texto:"Este sistema registra entrada, saída e reentrada dos participantes pelo QR Code.",destaque:"O fluxo é simples: escolha a atividade → escolha o movimento → escaneie → confira a confirmação."},
+ {icone:"🔐",titulo:"Entre com seu acesso",texto:"Informe seu usuário e senha de monitor. Ao iniciar, o sistema tenta atualizar participantes e atividades.",destaque:"Se a internet cair depois que a base estiver disponível neste aparelho, você poderá continuar trabalhando com os dados locais."},
+ {icone:"📅",titulo:"Selecione a atividade",texto:"Escolha a atividade que você irá credenciar e confira nome, data, turno, horário e local.",destaque:"DISPONÍVEL: pode iniciar. • EM ANDAMENTO: pode continuar. • INDISPONÍVEL: credenciamento não permitido. • BLOQUEADA: há outra atividade em andamento."},
+ {icone:"↔️",titulo:"Escolha o movimento",texto:"Antes de registrar, selecione ENTRADA, SAÍDA ou ENTRADA NOVAMENTE.",destaque:"O movimento selecionado será usado nos próximos registros até que você escolha outro."},
+ {icone:"📷",titulo:"Aponte para o QR Code",texto:"Centralize o QR Code do participante na área indicada pela câmera. Quando o código for detectado, o sistema emitirá um bip.",destaque:"Após cada leitura, o scanner aguarda 3 segundos antes de aceitar outro QR. Não é necessário tocar em botão entre os participantes."},
+ {icone:"✅",titulo:"Confira o resultado",texto:"Depois da leitura, confira o nome, o movimento e o horário exibidos na tela.",destaque:"PARTICIPANTE NÃO ENCONTRADO, INSCRIÇÃO INATIVA ou LIMITE ATINGIDO são avisos e não devem gerar registro indevido."},
+ {icone:"⌨️",titulo:"Sem QR Code?",texto:"Abra a aba MANUAL, digite o ID do participante e toque em REGISTRAR.",destaque:"O registro manual usa as mesmas validações e o mesmo movimento selecionado no scanner."},
+ {icone:"📊",titulo:"Acompanhe os registros",texto:"Na aba REGISTROS você acompanha total, entradas, saídas, reentradas e os registros mais recentes.",destaque:"Os contadores são atualizados automaticamente após registrar ou desfazer uma operação."},
+ {icone:"↩️",titulo:"Registrou errado?",texto:"Use DESFAZER ÚLTIMO para remover o registro mais recente da atividade.",destaque:"Antes de excluir, confira o nome, movimento e horário apresentados na confirmação."},
+ {icone:"📡",titulo:"Internet e modo offline",texto:"Se a conexão cair, continue o credenciamento quando a base já estiver salva no aparelho.",destaque:"Os registros permanecem locais. Quando a conexão voltar, sincronize. Nunca descarte registros apenas porque a internet caiu."},
+ {icone:"☁️",titulo:"Finalizando a atividade",texto:"Ao terminar, use SINCRONIZAR E ENCERRAR. Durante o envio, aguarde a confirmação do servidor.",destaque:"Se a sincronização falhar, os registros permanecem neste aparelho e a atividade continua protegida para uma nova tentativa."},
+ {icone:"🚀",titulo:"Tudo pronto!",texto:"1. Entre com seu usuário.\n2. Selecione a atividade.\n3. Escolha o movimento.\n4. Escaneie o QR.\n5. Confira o resultado.\n6. Ao terminar, sincronize e encerre.",destaque:"Você pode rever este tutorial a qualquer momento tocando em “? Ajuda” no topo."}
+];
+
+function renderizarTutorial(){
+ const e=tutorialEtapas[tutorialEtapa];
+ document.getElementById("tutorialProgresso").textContent=`Passo ${tutorialEtapa+1} de ${tutorialEtapas.length}`;
+ document.getElementById("tutorialIcone").textContent=e.icone;
+ document.getElementById("tutorialTitulo").textContent=e.titulo;
+ document.getElementById("tutorialTexto").textContent=e.texto;
+ document.getElementById("tutorialDestaque").textContent=e.destaque;
+ document.getElementById("tutorialPontos").textContent="•".repeat(tutorialEtapa+1)+"◦".repeat(tutorialEtapas.length-tutorialEtapa-1);
+ document.getElementById("tutorialVoltar").style.visibility=tutorialEtapa===0?"hidden":"visible";
+ document.getElementById("tutorialProximo").textContent=tutorialEtapa===tutorialEtapas.length-1?"COMEÇAR":"PRÓXIMO";
+}
+function abrirTutorial(){tutorialEtapa=0;renderizarTutorial();document.getElementById("tutorialOverlay").classList.remove("oculto");}
+function fecharTutorial(salvar=true){document.getElementById("tutorialOverlay").classList.add("oculto");if(salvar){try{localStorage.setItem(TUTORIAL_CHAVE,"true");}catch(e){}}}
+document.getElementById("tutorialProximo").addEventListener("click",()=>{if(tutorialEtapa<tutorialEtapas.length-1){tutorialEtapa++;renderizarTutorial();}else fecharTutorial(true);});
+document.getElementById("tutorialVoltar").addEventListener("click",()=>{if(tutorialEtapa>0){tutorialEtapa--;renderizarTutorial();}});
+document.getElementById("tutorialPular").addEventListener("click",()=>fecharTutorial(true));
+document.getElementById("botaoAjuda").addEventListener("click",abrirTutorial);
+
+function verificarTutorialPrimeiroAcesso(){
+ let concluido=false; try{concluido=localStorage.getItem(TUTORIAL_CHAVE)==="true";}catch(e){}
+ if(concluido)return;
+ const esperar=setInterval(()=>{
+   if(document.getElementById("telaCarregando").classList.contains("oculto")){
+     clearInterval(esperar); abrirTutorial();
+   }
+ },200);
+ setTimeout(()=>{clearInterval(esperar);if(!document.getElementById("tutorialOverlay").classList.contains("oculto"))return;let c=false;try{c=localStorage.getItem(TUTORIAL_CHAVE)==="true";}catch(e){}if(!c)abrirTutorial();},12000);
+}
+
+function mostrarCarregamentoAcao(texto){
+ document.getElementById("acaoLoadingTexto").textContent=texto||"Processando...";
+ document.getElementById("acaoLoadingOverlay").classList.remove("oculto");
+}
+function esconderCarregamentoAcao(){document.getElementById("acaoLoadingOverlay").classList.add("oculto");}
+
+verificarTutorialPrimeiroAcesso();
 
 
 iniciar();
