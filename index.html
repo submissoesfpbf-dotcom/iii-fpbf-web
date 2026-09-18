@@ -1,0 +1,4015 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>III FPBF - Credenciamento</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f3f3;
+    color: #222;
+}
+
+body {
+    min-height: 100vh;
+}
+
+button, input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.oculto {
+    display: none !important;
+}
+
+
+/* =========================================================
+   TOPO
+   ========================================================= */
+
+.topo {
+    background: linear-gradient(135deg, #5d0d18, #8b1e2d);
+    color: #fff;
+    padding: 16px 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.18);
+}
+
+.topo-conteudo {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.topo-titulo {
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.topo-subtitulo {
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: .85;
+}
+
+.status-conexao {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    background: rgba(255,255,255,.13);
+    padding: 7px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.bolinha {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ccc;
+}
+
+.bolinha.online {
+    background: #54d56a;
+}
+
+.bolinha.offline {
+    background: #ffcc4d;
+}
+
+
+/* =========================================================
+   ESTRUTURA
+   ========================================================= */
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 22px 14px 40px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 4px 18px rgba(0,0,0,.07);
+}
+
+
+/* =========================================================
+   CARREGAMENTO
+   ========================================================= */
+
+#telaCarregando {
+    text-align: center;
+    margin-top: 35px;
+}
+
+.loader {
+    width: 46px;
+    height: 46px;
+    margin: 5px auto 20px;
+    border: 5px solid #e5e5e5;
+    border-top-color: #8b1e2d;
+    border-radius: 50%;
+    animation: girar .8s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+.carregando-titulo {
+    font-size: 21px;
+    font-weight: bold;
+    color: #721725;
+}
+
+.carregando-texto {
+    margin-top: 9px;
+    color: #666;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.login-container {
+    max-width: 430px;
+    margin: 25px auto;
+}
+
+.login-titulo {
+    margin: 0 0 5px;
+    text-align: center;
+    font-size: 26px;
+    color: #751827;
+}
+
+.login-subtitulo {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.campo {
+    margin-bottom: 17px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+}
+
+.campo input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+}
+
+.campo input:focus {
+    border-color: #8b1e2d;
+    box-shadow: 0 0 0 3px rgba(139,30,45,.10);
+}
+
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+
+.botao-principal {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #741522, #a12639);
+    color: #fff;
+    font-weight: 700;
+}
+
+.botao-secundario {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #555;
+    padding: 10px 13px;
+    border-radius: 9px;
+}
+
+.botao-perigo {
+    border: 1px solid #e5b6bd;
+    background: #fff5f6;
+    color: #971d30;
+    padding: 10px 13px;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+.botao-exportar {
+    border: none;
+    background: #333;
+    color: #fff;
+    padding: 11px 14px;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   LOGIN INFO
+   ========================================================= */
+
+.mensagem {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mensagem.erro {
+    background: #fdebed;
+    color: #8c1d2d;
+    border: 1px solid #f3c5cb;
+}
+
+.info-base {
+    margin-top: 22px;
+    padding-top: 17px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   PAINEL
+   ========================================================= */
+
+.painel-superior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.bem-vindo {
+    color: #777;
+    font-size: 13px;
+}
+
+.nome-monitor {
+    margin-top: 3px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #711523;
+}
+
+.barra-base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 25px;
+}
+
+.chip {
+    background: #f3f3f3;
+    border: 1px solid #e5e5e5;
+    border-radius: 9px;
+    padding: 8px 11px;
+    font-size: 12px;
+    color: #555;
+}
+
+.chip-alerta {
+    background: #fff4dd;
+    border-color: #efd79d;
+    color: #77570e;
+}
+
+.titulo-secao {
+    margin: 5px 0 15px;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+
+.lista-eventos {
+    display: grid;
+    gap: 13px;
+}
+
+.evento {
+    border: 1px solid #ddd;
+    border-left: 5px solid #8b1e2d;
+    border-radius: 13px;
+    padding: 17px;
+    background: #fff;
+}
+
+.evento.indisponivel {
+    opacity: .62;
+    border-left-color: #aaa;
+}
+
+.evento.bloqueado {
+    border-left-color: #d39c28;
+    background: #fffaf0;
+}
+
+.evento-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.evento-nome {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.evento-id {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #999;
+}
+
+.selo {
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    height: fit-content;
+}
+
+.selo.disponivel {
+    background: #e8f6eb;
+    color: #287337;
+}
+
+.selo.indisponivel {
+    background: #eee;
+    color: #666;
+}
+
+.selo.andamento {
+    background: #fff0c8;
+    color: #74530b;
+}
+
+.evento-detalhes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(130px,1fr));
+    gap: 10px;
+    margin-top: 15px;
+    color: #666;
+    font-size: 13px;
+}
+
+.evento-detalhe strong {
+    display: block;
+    color: #444;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+.botao-evento {
+    width: 100%;
+    margin-top: 15px;
+    padding: 11px;
+    border: none;
+    border-radius: 9px;
+    background: #8b1e2d;
+    color: #fff;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SCANNER
+   ========================================================= */
+
+.scanner-topo {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.scanner-evento {
+    font-size: 21px;
+    font-weight: 700;
+    color: #711523;
+}
+
+.scanner-info {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 5px;
+}
+
+.lote-box {
+    margin-bottom: 15px;
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border-radius: 9px;
+    font-size: 11px;
+    color: #666;
+    word-break: break-all;
+}
+
+.lote-box strong {
+    color: #333;
+}
+
+
+/* =========================================================
+   CONTADORES
+   ========================================================= */
+
+.resumo {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.resumo-item {
+    text-align: center;
+    padding: 11px 5px;
+    border-radius: 11px;
+    background: #f7f7f7;
+    border: 1px solid #e8e8e8;
+}
+
+.resumo-numero {
+    font-size: 23px;
+    font-weight: 700;
+    color: #8b1e2d;
+}
+
+.resumo-label {
+    margin-top: 4px;
+    font-size: 9px;
+    color: #777;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   MOVIMENTOS
+   ========================================================= */
+
+.movimento-titulo {
+    font-size: 12px;
+    color: #666;
+    font-weight: 700;
+    margin-bottom: 9px;
+    text-transform: uppercase;
+}
+
+.movimentos {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.movimento {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #555;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.movimento.ativo {
+    background: #8b1e2d;
+    border-color: #8b1e2d;
+    color: #fff;
+}
+
+
+/* =========================================================
+   CÂMERA
+   ========================================================= */
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+    background: #111;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#videoScanner {
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+}
+
+.mira {
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    border: 3px solid rgba(255,255,255,.92);
+    border-radius: 17px;
+    pointer-events: none;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,.18);
+}
+
+.camera-mensagem {
+    position: absolute;
+    z-index: 4;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    text-align: center;
+    padding: 9px;
+    background: rgba(0,0,0,.68);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 11px;
+}
+
+.acoes-camera {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.acoes-camera button {
+    flex: 1;
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+.resultado {
+    margin-top: 16px;
+    padding: 20px 15px;
+    border-radius: 13px;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.resultado.sucesso {
+    background: #e7f7eb;
+    border-color: #8fc99b;
+}
+
+.resultado.erro {
+    background: #fde8eb;
+    border-color: #e4a0aa;
+}
+
+.resultado.aviso {
+    background: #fff5d9;
+    border-color: #e8ca72;
+}
+
+.resultado-titulo {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.resultado-nome {
+    margin-top: 7px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.resultado-detalhes {
+    margin-top: 8px;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MANUAL
+   ========================================================= */
+
+.manual {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #eee;
+}
+
+.manual-titulo {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.manual-linha {
+    display: flex;
+    gap: 8px;
+}
+
+.manual-linha input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #ccc;
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.manual-linha button {
+    border: none;
+    background: #333;
+    color: #fff;
+    padding: 0 17px;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   HISTÓRICO
+   ========================================================= */
+
+.historico {
+    margin-top: 22px;
+    border-top: 1px solid #eee;
+    padding-top: 18px;
+}
+
+.historico-titulo {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.historico-lista {
+    display: grid;
+    gap: 7px;
+}
+
+.registro-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    background: #f7f7f7;
+    border-radius: 9px;
+    padding: 10px 12px;
+}
+
+.registro-nome {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.registro-sub {
+    margin-top: 3px;
+    font-size: 10px;
+    color: #777;
+}
+
+.registro-hora {
+    font-size: 12px;
+    font-weight: 700;
+    color: #8b1e2d;
+}
+
+.sem-registros {
+    color: #888;
+    font-size: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
+
+.acoes-registros {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.scanner-acoes {
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:600px) {
+
+    .container {
+        padding: 12px 8px 30px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .topo-titulo {
+        font-size: 15px;
+    }
+
+    .scanner-evento {
+        font-size: 18px;
+    }
+
+    .resumo {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .movimentos {
+        grid-template-columns: 1fr;
+    }
+
+    .camera-container {
+        min-height: 230px;
+    }
+
+    .mira {
+        width: 175px;
+        height: 175px;
+    }
+
+    .acoes-registros {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE-FIRST / NAVEGAÇÃO EM ABAS
+   Apenas reorganiza a interface em telas pequenas.
+   IDs e funcionalidades originais são preservados.
+   ========================================================= */
+.scanner-tabs { display:none; }
+
+@media(max-width:600px) {
+    body { background:#fff; }
+    .topo { padding:10px 12px; position:sticky; top:0; z-index:30; }
+    .topo-conteudo { gap:8px; }
+    .topo-subtitulo { font-size:10px; }
+    .status-conexao { padding:6px 8px; font-size:10px; }
+    .container { padding:8px 0 24px; }
+    .card { border-radius:0; border-left:0; border-right:0; box-shadow:none; padding:12px; }
+    .login-container { margin:12px auto; padding:0 10px; }
+    .login-container .card { border:1px solid #e5e5e5; border-radius:14px; }
+    .login-titulo { font-size:22px; }
+    .painel-superior { margin-bottom:12px; }
+    .nome-monitor { font-size:18px; }
+    .barra-base { gap:6px; margin-bottom:15px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:3px; }
+    .chip { flex:0 0 auto; }
+    .evento { padding:13px; border-radius:10px; }
+    .evento-cabecalho { gap:8px; }
+    .evento-nome { font-size:15px; }
+    .evento-detalhes { grid-template-columns:1fr 1fr; gap:8px; margin-top:11px; }
+    .scanner-topo { margin-bottom:8px; }
+    .scanner-evento { font-size:17px; }
+    .scanner-info { font-size:11px; }
+    .lote-box { margin-bottom:10px; padding:8px 10px; font-size:9px; }
+
+    .scanner-tabs {
+        display:grid; grid-template-columns:repeat(3,1fr); gap:5px;
+        position:sticky; top:58px; z-index:25; background:#fff;
+        margin:0 -12px 12px; padding:8px 12px; border-bottom:1px solid #eee;
+    }
+    .scanner-tab {
+        border:1px solid #ddd; background:#f7f7f7; color:#555;
+        border-radius:9px; padding:10px 5px; font-size:11px; font-weight:700;
+    }
+    .scanner-tab.ativo { background:#8b1e2d; color:#fff; border-color:#8b1e2d; }
+    .mobile-tab-section.mobile-tab-hidden { display:none !important; }
+
+    .resumo { grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:10px; }
+    .resumo-item { padding:8px 2px; }
+    .resumo-numero { font-size:19px; }
+    .resumo-label { font-size:8px; }
+    .movimento-titulo { margin-bottom:6px; }
+    .movimentos { grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
+    .movimento { padding:10px 3px; font-size:9px; min-height:42px; }
+    .camera-container { min-height:0; height:min(54vh,430px); border-radius:11px; }
+    #videoScanner { height:100%; max-height:none; object-fit:cover; }
+    .mira { width:min(58vw,220px); height:min(58vw,220px); }
+    .acoes-camera { position:sticky; bottom:6px; z-index:20; background:rgba(255,255,255,.96); padding:6px 0; }
+    .acoes-camera button { min-height:44px; }
+    .resultado { margin-top:10px; padding:14px 10px; }
+    .resultado-nome { font-size:20px; }
+    .manual { margin-top:0; padding-top:4px; border-top:0; }
+    .manual-titulo { font-size:16px; margin-bottom:12px; }
+    .manual-linha { flex-direction:column; }
+    .manual-linha input, .manual-linha button { width:100%; min-height:48px; }
+    .manual-linha button { padding:12px; }
+    .historico { margin-top:0; padding-top:4px; border-top:0; }
+    .historico-titulo { font-size:16px; }
+    .registro-item { padding:11px; }
+    .acoes-registros { grid-template-columns:1fr 1fr; gap:6px; }
+    .acoes-registros button { min-height:44px; font-size:11px; }
+    #botaoSincronizar, #botaoCancelarAtividade { min-height:48px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="topo">
+    <div class="topo-conteudo">
+
+        <div>
+            <div id="nomeEventoTopo" class="topo-titulo">
+                Sistema de Credenciamento
+            </div>
+            <div id="siglaEventoTopo" class="topo-subtitulo">
+                III FPBF
+            </div>
+        </div>
+
+        <div class="status-conexao">
+            <span id="bolinhaConexao" class="bolinha"></span>
+            <span id="textoConexao">Verificando</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="container">
+
+<!-- CARREGAMENTO -->
+
+<section id="telaCarregando" class="card">
+
+    <div class="loader"></div>
+
+    <div class="carregando-titulo">
+        Sincronizando
+    </div>
+
+    <div id="textoCarregamento" class="carregando-texto">
+        Preparando...
+    </div>
+
+</section>
+
+
+<!-- LOGIN -->
+
+<section id="telaLogin" class="login-container oculto">
+
+    <div class="card">
+
+        <h1 class="login-titulo">
+            Acesso do Monitor
+        </h1>
+
+        <div id="subtituloLogin" class="login-subtitulo">
+            Credenciamento e controle de frequência
+        </div>
+
+        <form id="formLogin">
+
+            <div class="campo">
+                <label>Usuário</label>
+                <input id="usuario" type="text" required>
+            </div>
+
+            <div class="campo">
+                <label>Senha</label>
+                <input id="senha" type="password" required>
+            </div>
+
+            <button class="botao-principal" type="submit">
+                ENTRAR
+            </button>
+
+        </form>
+
+        <div id="mensagemLogin" class="mensagem erro oculto"></div>
+
+        <div class="info-base">
+            <div id="ultimaSincronizacao"></div>
+            <div id="quantidadeInscritos"></div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- EVENTOS -->
+
+<section id="telaEventos" class="oculto">
+
+<div class="card">
+
+    <div class="painel-superior">
+
+        <div>
+            <div class="bem-vindo">Monitor conectado</div>
+            <div id="nomeMonitor" class="nome-monitor"></div>
+        </div>
+
+        <button id="botaoSair" class="botao-secundario">
+            Sair
+        </button>
+
+    </div>
+
+    <div class="barra-base">
+        <div id="chipConexao" class="chip"></div>
+        <div id="chipAtualizacao" class="chip"></div>
+        <div id="chipInscritos" class="chip"></div>
+        <div id="chipAtividade" class="chip chip-alerta oculto"></div>
+    </div>
+
+    <h2 class="titulo-secao">
+        Selecione uma atividade
+    </h2>
+
+    <div id="listaEventos" class="lista-eventos"></div>
+
+</div>
+
+</section>
+
+
+<!-- SCANNER -->
+
+<section id="telaScanner" class="oculto">
+
+<div class="card">
+
+    <div class="scanner-topo">
+
+        <div>
+            <div id="scannerEventoNome" class="scanner-evento"></div>
+            <div id="scannerEventoInfo" class="scanner-info"></div>
+        </div>
+
+    </div>
+
+
+    <div class="lote-box">
+        <strong>Lote:</strong>
+        <span id="scannerLote"></span>
+    </div>
+
+    <nav class="scanner-tabs" aria-label="Áreas do credenciamento">
+        <button type="button" class="scanner-tab ativo" data-tab="scanner">Scanner</button>
+        <button type="button" class="scanner-tab" data-tab="manual">Manual</button>
+        <button type="button" class="scanner-tab" data-tab="registros">Registros</button>
+    </nav>
+
+
+    <div class="resumo mobile-tab-section" data-tab-section="scanner">
+
+        <div class="resumo-item">
+            <div id="totalRegistros" class="resumo-numero">0</div>
+            <div class="resumo-label">Total</div>
+        </div>
+
+        <div class="resumo-item">
+            <div id="totalEntradas" class="resumo-numero">0</div>
+            <div class="resumo-label">Entradas</div>
+        </div>
+
+        <div class="resumo-item">
+            <div id="totalSaidas" class="resumo-numero">0</div>
+            <div class="resumo-label">Saídas</div>
+        </div>
+
+        <div class="resumo-item">
+            <div id="totalReentradas" class="resumo-numero">0</div>
+            <div class="resumo-label">Reentradas</div>
+        </div>
+
+    </div>
+
+
+    <div class="movimento-titulo mobile-tab-section" data-tab-section="scanner">
+        Tipo de registro
+    </div>
+
+    <div class="movimentos mobile-tab-section" data-tab-section="scanner">
+
+        <button class="movimento ativo" data-movimento="ENTRADA">
+            ENTRADA
+        </button>
+
+        <button class="movimento" data-movimento="SAÍDA">
+            SAÍDA
+        </button>
+
+        <button class="movimento" data-movimento="ENTRADA NOVAMENTE">
+            ENTRADA NOVAMENTE
+        </button>
+
+    </div>
+
+
+    <div class="camera-container mobile-tab-section" data-tab-section="scanner">
+
+        <video
+            id="videoScanner"
+            autoplay
+            playsinline
+            muted
+        ></video>
+
+        <div class="mira"></div>
+
+        <div id="cameraAviso" class="camera-mensagem">
+            Preparando câmera...
+        </div>
+
+    </div>
+
+
+    <div class="acoes-camera mobile-tab-section" data-tab-section="scanner">
+
+        <button
+            id="botaoIniciarCamera"
+            class="botao-principal"
+            type="button"
+        >
+            INICIAR CÂMERA
+        </button>
+
+        <button
+            id="botaoPararCamera"
+            class="botao-secundario"
+            type="button"
+        >
+            PARAR
+        </button>
+
+    </div>
+
+
+    <div id="resultadoScan" class="resultado oculto mobile-tab-section" data-tab-section="scanner">
+
+        <div id="resultadoTitulo" class="resultado-titulo"></div>
+
+        <div id="resultadoNome" class="resultado-nome"></div>
+
+        <div id="resultadoDetalhes" class="resultado-detalhes"></div>
+
+    </div>
+
+
+    <div class="manual mobile-tab-section" data-tab-section="manual">
+
+        <div class="manual-titulo">
+            Registro manual
+        </div>
+
+        <div class="manual-linha">
+
+            <input
+                id="idManual"
+                type="text"
+                placeholder="ID do participante"
+            >
+
+            <button id="botaoRegistrarManual">
+                REGISTRAR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="historico mobile-tab-section" data-tab-section="registros">
+
+        <div class="historico-titulo">
+            Últimos registros
+        </div>
+
+        <div id="historicoLista" class="historico-lista"></div>
+
+    </div>
+
+
+    <div class="acoes-registros mobile-tab-section" data-tab-section="registros">
+
+    <button
+        id="botaoDesfazer"
+        class="botao-perigo"
+    >
+        DESFAZER ÚLTIMO
+    </button>
+
+    <button
+        id="botaoExportar"
+        class="botao-exportar"
+    >
+        EXPORTAR CSV
+    </button>
+
+</div>
+
+<div class="mobile-tab-section" data-tab-section="registros" style="margin-top:10px;">
+
+    <button
+        id="botaoSincronizar"
+        class="botao-principal"
+        style="background:#287337;"
+    >
+        SINCRONIZAR E ENCERRAR
+    </button>
+
+</div>
+
+<div class="mobile-tab-section" data-tab-section="registros" style="margin-top:8px;">
+
+    <button
+        id="botaoCancelarAtividade"
+        class="botao-secundario"
+        style="width:100%;"
+    >
+        CANCELAR SELEÇÃO SEM REGISTROS
+    </button>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   API
+   ========================================================= */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycby6TnyqG-6sH8R2LlyT2eIs3btSOy8bt5sdJyIqVEJ0JsT_iLpIWhgfbTNpAP_uG0NLjQ/exec";
+
+
+/* =========================================================
+   CONFIGURAÇÃO
+   ========================================================= */
+
+const DB_NOME = "credenciamento_fpbf";
+const DB_VERSAO = 1;
+
+const LIMITE_MOVIMENTO = 2;
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+let db;
+
+let configuracao = {};
+let inscritos = [];
+let monitores = [];
+let eventos = [];
+
+let monitorLogado = null;
+let eventoSelecionado = null;
+let loteAtual = null;
+
+let movimentoAtual = "ENTRADA";
+
+let cameraStream = null;
+let cameraRodando = false;
+let detectorQR = null;
+let loopCameraId = null;
+
+let ultimoCodigo = "";
+let ultimaLeituraEm = 0;
+
+
+/* =========================================================
+   ELEMENTOS
+   ========================================================= */
+
+const telaCarregando =
+    document.getElementById("telaCarregando");
+
+const telaLogin =
+    document.getElementById("telaLogin");
+
+const telaEventos =
+    document.getElementById("telaEventos");
+
+const telaScanner =
+    document.getElementById("telaScanner");
+
+const textoCarregamento =
+    document.getElementById("textoCarregamento");
+
+const mensagemLogin =
+    document.getElementById("mensagemLogin");
+
+const videoScanner =
+    document.getElementById("videoScanner");
+
+const cameraAviso =
+    document.getElementById("cameraAviso");
+
+
+/* =========================================================
+   INDEXEDDB
+   ========================================================= */
+
+function abrirBanco() {
+
+    return new Promise((resolve,reject) => {
+
+        const req =
+            indexedDB.open(DB_NOME,DB_VERSAO);
+
+        req.onupgradeneeded = event => {
+
+            const banco = event.target.result;
+
+            if(!banco.objectStoreNames.contains("inscritos")) {
+                banco.createObjectStore("inscritos",{keyPath:"ID"});
+            }
+
+            if(!banco.objectStoreNames.contains("monitores")) {
+                banco.createObjectStore("monitores",{keyPath:"ID_MONITOR"});
+            }
+
+            if(!banco.objectStoreNames.contains("eventos")) {
+                banco.createObjectStore("eventos",{keyPath:"ID_EVENTO"});
+            }
+
+            if(!banco.objectStoreNames.contains("config")) {
+                banco.createObjectStore("config",{keyPath:"chave"});
+            }
+
+            if(!banco.objectStoreNames.contains("registros")) {
+                banco.createObjectStore(
+                    "registros",
+                    {keyPath:"registro_id"}
+                );
+            }
+
+        };
+
+        req.onsuccess = event => {
+            db = event.target.result;
+            resolve();
+        };
+
+        req.onerror = () => reject(req.error);
+
+    });
+
+}
+
+
+function limparStore(nome) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx = db.transaction(nome,"readwrite");
+
+        const req = tx.objectStore(nome).clear();
+
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+
+    });
+
+}
+
+
+function salvarLista(nome,lista) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx = db.transaction(nome,"readwrite");
+        const store = tx.objectStore(nome);
+
+        lista.forEach(item => store.put(item));
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+
+function lerTodos(nome) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx = db.transaction(nome,"readonly");
+
+        const req =
+            tx.objectStore(nome).getAll();
+
+        req.onsuccess =
+            () => resolve(req.result || []);
+
+        req.onerror =
+            () => reject(req.error);
+
+    });
+
+}
+
+
+function salvarConfig(chave,valor) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx =
+            db.transaction("config","readwrite");
+
+        tx.objectStore("config").put({
+            chave,
+            valor
+        });
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+
+function lerConfig(chave) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx =
+            db.transaction("config","readonly");
+
+        const req =
+            tx.objectStore("config").get(chave);
+
+        req.onsuccess =
+            () => resolve(
+                req.result
+                    ? req.result.valor
+                    : null
+            );
+
+        req.onerror =
+            () => reject(req.error);
+
+    });
+
+}
+
+
+function salvarRegistro(registro) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx =
+            db.transaction("registros","readwrite");
+
+        tx.objectStore("registros").put(registro);
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+
+function excluirRegistro(id) {
+
+    return new Promise((resolve,reject) => {
+
+        const tx =
+            db.transaction("registros","readwrite");
+
+        tx.objectStore("registros").delete(id);
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+async function salvarBaseLocal(dados) {
+
+    await limparStore("inscritos");
+    await limparStore("monitores");
+    await limparStore("eventos");
+
+    await salvarLista(
+        "inscritos",
+        dados.inscritos || []
+    );
+
+    await salvarLista(
+        "monitores",
+        dados.monitores || []
+    );
+
+    await salvarLista(
+        "eventos",
+        dados.eventos || []
+    );
+
+    await salvarConfig(
+        "configuracao",
+        dados.configuracao || {}
+    );
+
+    await salvarConfig(
+        "ultima_sincronizacao",
+        new Date().toISOString()
+    );
+
+}
+
+
+async function carregarBaseLocal() {
+
+    configuracao =
+        await lerConfig("configuracao") || {};
+
+    inscritos =
+        await lerTodos("inscritos");
+
+    monitores =
+        await lerTodos("monitores");
+
+    eventos =
+        await lerTodos("eventos");
+
+}
+
+
+/* =========================================================
+   JSONP
+   ========================================================= */
+
+function carregarDadosAPI() {
+
+    return new Promise((resolve,reject) => {
+
+        const callback =
+            "__fpbf_" +
+            Date.now() +
+            "_" +
+            Math.floor(Math.random()*100000);
+
+        const script =
+            document.createElement("script");
+
+        const timeout =
+            setTimeout(() => {
+
+                limpar();
+
+                reject(
+                    new Error("Tempo limite da API.")
+                );
+
+            },15000);
+
+
+        function limpar() {
+
+            clearTimeout(timeout);
+
+            if(script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+
+            try {
+                delete window[callback];
+            } catch(e) {}
+
+        }
+
+
+        window[callback] = dados => {
+
+            limpar();
+
+            if(!dados || dados.sucesso !== true) {
+
+                reject(
+                    new Error(
+                        dados?.erro ||
+                        "Erro na API."
+                    )
+                );
+
+                return;
+            }
+
+            resolve(dados);
+
+        };
+
+
+        script.onerror = () => {
+
+            limpar();
+
+            reject(
+                new Error(
+                    "Não foi possível acessar a API."
+                )
+            );
+
+        };
+
+
+        script.src =
+            API_URL +
+            "?callback=" +
+            encodeURIComponent(callback) +
+            "&t=" +
+            Date.now();
+
+
+        document.head.appendChild(script);
+
+    });
+
+}
+
+
+async function sincronizarBase() {
+
+    try {
+
+        const dados =
+            await carregarDadosAPI();
+
+        await salvarBaseLocal(dados);
+        await carregarBaseLocal();
+
+    }
+    catch(erro) {
+
+        console.warn(
+            "Usando base local:",
+            erro
+        );
+
+        await carregarBaseLocal();
+
+        if(!monitores.length) {
+            throw erro;
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+document
+.getElementById("formLogin")
+.addEventListener("submit",event => {
+
+    event.preventDefault();
+
+    mensagemLogin.classList.add("oculto");
+
+    const usuario =
+        document.getElementById("usuario")
+        .value.trim();
+
+    const senha =
+        document.getElementById("senha")
+        .value;
+
+    const monitor =
+        monitores.find(m =>
+
+            String(m.USUARIO).trim() === usuario
+
+            &&
+
+            String(m.SENHA) === senha
+
+            &&
+
+            normalizar(m.ATIVO) === "SIM"
+
+        );
+
+
+    if(!monitor) {
+
+        mensagemLogin.textContent =
+            "Usuário ou senha incorretos.";
+
+        mensagemLogin.classList.remove("oculto");
+
+        return;
+    }
+
+
+    monitorLogado = monitor;
+
+    abrirEventos();
+
+});
+
+
+/* =========================================================
+   ATIVIDADE EM ANDAMENTO
+   ========================================================= */
+
+async function obterAtividadeAtiva() {
+
+    return await lerConfig(
+        "atividade_ativa_" +
+        monitorLogado.ID_MONITOR
+    );
+
+}
+
+
+async function definirAtividadeAtiva(dados) {
+
+    await salvarConfig(
+        "atividade_ativa_" +
+        monitorLogado.ID_MONITOR,
+        dados
+    );
+
+}
+
+
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+
+async function abrirEventos() {
+
+    pararCamera();
+
+    telaLogin.classList.add("oculto");
+    telaScanner.classList.add("oculto");
+    telaEventos.classList.remove("oculto");
+
+    document.getElementById(
+        "nomeMonitor"
+    ).textContent =
+        monitorLogado.NOME;
+
+    await renderizarEventos();
+
+}
+
+
+async function renderizarEventos() {
+
+    const lista =
+        document.getElementById("listaEventos");
+
+    lista.innerHTML = "";
+
+
+    const ativa =
+        await obterAtividadeAtiva();
+
+
+    const chipAtividade =
+        document.getElementById("chipAtividade");
+
+
+    if(ativa) {
+
+        chipAtividade.classList.remove("oculto");
+
+        chipAtividade.textContent =
+            "Atividade em andamento: " +
+            ativa.nome;
+
+    } else {
+
+        chipAtividade.classList.add("oculto");
+
+    }
+
+
+    eventos
+    .filter(e =>
+        !e.ATIVO ||
+        normalizar(e.ATIVO) === "SIM"
+    )
+    .forEach(evento => {
+
+        const credenciamento =
+            normalizar(
+                evento.CREDENCIAMENTO
+            ) === "SIM";
+
+
+        const mesmaAtividade =
+            ativa &&
+            ativa.id_evento ===
+            evento.ID_EVENTO;
+
+
+        const bloqueado =
+            ativa &&
+            !mesmaAtividade;
+
+
+        const card =
+            document.createElement("div");
+
+
+        if(!credenciamento) {
+
+            card.className =
+                "evento indisponivel";
+
+        } else if(bloqueado) {
+
+            card.className =
+                "evento bloqueado";
+
+        } else {
+
+            card.className =
+                "evento";
+
+        }
+
+
+        let selo;
+
+        if(!credenciamento) {
+
+            selo =
+                '<span class="selo indisponivel">INDISPONÍVEL</span>';
+
+        } else if(mesmaAtividade) {
+
+            selo =
+                '<span class="selo andamento">EM ANDAMENTO</span>';
+
+        } else if(bloqueado) {
+
+            selo =
+                '<span class="selo andamento">BLOQUEADA</span>';
+
+        } else {
+
+            selo =
+                '<span class="selo disponivel">DISPONÍVEL</span>';
+
+        }
+
+
+        card.innerHTML = `
+
+            <div class="evento-cabecalho">
+
+                <div>
+
+                    <div class="evento-nome">
+                        ${escapar(evento.NOME)}
+                    </div>
+
+                    <div class="evento-id">
+                        ${escapar(evento.ID_EVENTO)}
+                    </div>
+
+                </div>
+
+                ${selo}
+
+            </div>
+
+
+            <div class="evento-detalhes">
+
+                <div class="evento-detalhe">
+                    <strong>Data</strong>
+                    ${escapar(evento.DATA)}
+                </div>
+
+                <div class="evento-detalhe">
+                    <strong>Turno</strong>
+                    ${escapar(evento.TURNO)}
+                </div>
+
+                <div class="evento-detalhe">
+                    <strong>Horário</strong>
+                    ${escapar(evento.INICIO)}
+                    –
+                    ${escapar(evento.FIM)}
+                </div>
+
+                <div class="evento-detalhe">
+                    <strong>Local</strong>
+                    ${escapar(evento.LOCAL)}
+                </div>
+
+            </div>
+
+            <button
+                class="botao-evento"
+                ${
+                    !credenciamento ||
+                    bloqueado
+                    ? "disabled"
+                    : ""
+                }
+            >
+
+                ${
+                    mesmaAtividade
+                    ? "CONTINUAR ATIVIDADE"
+                    :
+                    bloqueado
+                    ? "OUTRA ATIVIDADE EM ANDAMENTO"
+                    :
+                    credenciamento
+                    ? "SELECIONAR ATIVIDADE"
+                    : "CREDENCIAMENTO INDISPONÍVEL"
+                }
+
+            </button>
+        `;
+
+
+        if(
+            credenciamento &&
+            !bloqueado
+        ) {
+
+            card
+            .querySelector(".botao-evento")
+            .addEventListener(
+                "click",
+                () => selecionarEvento(evento)
+            );
+
+        }
+
+
+        lista.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================================
+   LOTE
+   ========================================================= */
+
+function gerarLote(evento) {
+
+    const data =
+        evento.DATA
+        .replace(/\//g,"");
+
+    const random =
+        Math.random()
+        .toString(36)
+        .substring(2,8)
+        .toUpperCase();
+
+    return (
+        data +
+        "_" +
+        evento.ID_EVENTO +
+        "_" +
+        monitorLogado.ID_MONITOR +
+        "_" +
+        random
+    );
+
+}
+
+
+/* =========================================================
+   SELECIONAR EVENTO
+   ========================================================= */
+
+async function selecionarEvento(evento) {
+
+    eventoSelecionado = evento;
+
+
+    let ativa =
+        await obterAtividadeAtiva();
+
+
+    if(
+        ativa &&
+        ativa.id_evento ===
+        evento.ID_EVENTO
+    ) {
+
+        loteAtual =
+            ativa.lote_id;
+
+    } else {
+
+        loteAtual =
+            gerarLote(evento);
+
+
+        await definirAtividadeAtiva({
+
+            id_evento:
+                evento.ID_EVENTO,
+
+            nome:
+                evento.NOME,
+
+            lote_id:
+                loteAtual
+
+        });
+
+    }
+
+
+    movimentoAtual = "ENTRADA";
+
+
+    document
+    .querySelectorAll(".movimento")
+    .forEach(b => {
+
+        b.classList.toggle(
+            "ativo",
+            b.dataset.movimento ===
+            "ENTRADA"
+        );
+
+    });
+
+
+    telaEventos.classList.add("oculto");
+    telaScanner.classList.remove("oculto");
+
+
+    document.getElementById(
+        "scannerEventoNome"
+    ).textContent =
+        evento.NOME;
+
+
+    document.getElementById(
+        "scannerEventoInfo"
+    ).innerHTML =
+
+        escapar(evento.DATA) +
+        " • " +
+        escapar(evento.TURNO) +
+        "<br>" +
+
+        escapar(evento.INICIO) +
+        " – " +
+        escapar(evento.FIM) +
+        " • " +
+        escapar(evento.LOCAL) +
+        "<br>Monitor: " +
+        escapar(monitorLogado.NOME);
+
+
+    document.getElementById(
+        "scannerLote"
+    ).textContent =
+        loteAtual;
+
+
+    esconderResultado();
+
+    await atualizarHistorico();
+
+    iniciarCamera();
+
+}
+
+
+/* =========================================================
+   MOVIMENTOS
+   ========================================================= */
+
+document
+.querySelectorAll(".movimento")
+.forEach(botao => {
+
+    botao.addEventListener("click",() => {
+
+        movimentoAtual =
+            botao.dataset.movimento;
+
+        document
+        .querySelectorAll(".movimento")
+        .forEach(b =>
+            b.classList.remove("ativo")
+        );
+
+        botao.classList.add("ativo");
+
+    });
+
+});
+
+
+/* =========================================================
+   REGISTROS DA ATIVIDADE
+   ========================================================= */
+
+async function registrosAtuais() {
+
+    const todos =
+        await lerTodos("registros");
+
+    return todos
+    .filter(r =>
+        r.lote_id === loteAtual
+    )
+    .sort((a,b) =>
+        String(b.criado_em)
+        .localeCompare(
+            String(a.criado_em)
+        )
+    );
+
+}
+
+
+/* =========================================================
+   PROCESSAR PARTICIPANTE
+   ========================================================= */
+
+async function processarCodigo(codigo) {
+
+    codigo =
+        String(codigo || "")
+        .trim();
+
+
+    if(/^ID\s*:/i.test(codigo)) {
+
+        codigo =
+            codigo.replace(
+                /^ID\s*:/i,
+                ""
+            ).trim();
+
+    }
+
+
+    if(!codigo) return;
+
+
+    const participante =
+        inscritos.find(p =>
+            String(p.ID).trim() === codigo
+        );
+
+
+    if(!participante) {
+
+        mostrarErroScan(
+            "PARTICIPANTE NÃO ENCONTRADO",
+            "ID " + codigo,
+            "Nenhum registro foi gravado."
+        );
+
+        vibrarErro();
+
+        return;
+    }
+
+
+    if(
+        participante.ATIVO &&
+        normalizar(participante.ATIVO)
+        !== "SIM"
+    ) {
+
+        mostrarErroScan(
+            "INSCRIÇÃO INATIVA",
+            participante.NOME,
+            "Nenhum registro foi gravado."
+        );
+
+        vibrarErro();
+
+        return;
+    }
+
+
+    /*
+     * LIMITE DE 2
+     */
+
+    const registros =
+        await registrosAtuais();
+
+
+    const quantidade =
+        registros.filter(r =>
+
+            String(r.participante_id)
+            ===
+            String(participante.ID)
+
+            &&
+
+            r.movimento ===
+            movimentoAtual
+
+        ).length;
+
+
+    if(
+        quantidade >=
+        LIMITE_MOVIMENTO
+    ) {
+
+        mostrarAvisoScan(
+            "LIMITE ATINGIDO",
+            participante.NOME,
+            "Já existem 2 registros de " +
+            movimentoAtual +
+            " para esta pessoa nesta atividade."
+        );
+
+        vibrarErro();
+
+        return;
+    }
+
+
+    const agora =
+        new Date();
+
+
+    const registro = {
+
+        registro_id:
+            gerarRegistroId(),
+
+        lote_id:
+            loteAtual,
+
+        participante_id:
+            String(participante.ID),
+
+        nome:
+            participante.NOME || "",
+
+        email:
+            participante.EMAIL || "",
+
+        id_evento:
+            eventoSelecionado.ID_EVENTO,
+
+        evento:
+            eventoSelecionado.NOME,
+
+        data:
+            eventoSelecionado.DATA,
+
+        turno:
+            eventoSelecionado.TURNO,
+
+        hora:
+            agora.toLocaleTimeString(
+                "pt-BR",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit"
+                }
+            ),
+
+        movimento:
+            movimentoAtual,
+
+        id_monitor:
+            monitorLogado.ID_MONITOR,
+
+        monitor:
+            monitorLogado.NOME,
+
+        sincronizado:
+            false,
+
+        sincronizado_em:
+            "",
+
+        criado_em:
+            agora.toISOString()
+
+    };
+
+
+    await salvarRegistro(registro);
+
+
+    mostrarSucessoScan(registro);
+
+    vibrarSucesso();
+
+    await atualizarHistorico();
+
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+function mostrarSucessoScan(registro) {
+
+    const box =
+        document.getElementById(
+            "resultadoScan"
+        );
+
+    box.className =
+        "resultado sucesso";
+
+
+    document.getElementById(
+        "resultadoTitulo"
+    ).textContent =
+        "✓ REGISTRADO";
+
+
+    document.getElementById(
+        "resultadoNome"
+    ).textContent =
+        registro.nome;
+
+
+    document.getElementById(
+        "resultadoDetalhes"
+    ).textContent =
+        registro.movimento +
+        " • " +
+        registro.hora;
+
+}
+
+
+function mostrarErroScan(
+    titulo,
+    nome,
+    detalhes
+) {
+
+    const box =
+        document.getElementById(
+            "resultadoScan"
+        );
+
+    box.className =
+        "resultado erro";
+
+
+    document.getElementById(
+        "resultadoTitulo"
+    ).textContent =
+        titulo;
+
+
+    document.getElementById(
+        "resultadoNome"
+    ).textContent =
+        nome;
+
+
+    document.getElementById(
+        "resultadoDetalhes"
+    ).textContent =
+        detalhes;
+
+}
+
+
+function mostrarAvisoScan(
+    titulo,
+    nome,
+    detalhes
+) {
+
+    const box =
+        document.getElementById(
+            "resultadoScan"
+        );
+
+    box.className =
+        "resultado aviso";
+
+
+    document.getElementById(
+        "resultadoTitulo"
+    ).textContent =
+        titulo;
+
+
+    document.getElementById(
+        "resultadoNome"
+    ).textContent =
+        nome;
+
+
+    document.getElementById(
+        "resultadoDetalhes"
+    ).textContent =
+        detalhes;
+
+}
+
+
+function esconderResultado() {
+
+    document.getElementById(
+        "resultadoScan"
+    ).classList.add("oculto");
+
+}
+
+
+/* =========================================================
+   MANUAL
+   ========================================================= */
+
+async function registrarManual() {
+
+    const input =
+        document.getElementById(
+            "idManual"
+        );
+
+    const codigo =
+        input.value.trim();
+
+    if(!codigo) return;
+
+
+    await processarCodigo(codigo);
+
+
+    input.value = "";
+    input.focus();
+
+}
+
+
+document
+.getElementById("botaoRegistrarManual")
+.addEventListener(
+    "click",
+    registrarManual
+);
+
+
+document
+.getElementById("idManual")
+.addEventListener(
+    "keydown",
+    e => {
+
+        if(e.key === "Enter") {
+
+            e.preventDefault();
+
+            registrarManual();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   HISTÓRICO / CONTADORES
+   ========================================================= */
+
+async function atualizarHistorico() {
+
+    const registros =
+        await registrosAtuais();
+
+
+    document.getElementById(
+        "totalRegistros"
+    ).textContent =
+        registros.length;
+
+
+    document.getElementById(
+        "totalEntradas"
+    ).textContent =
+        registros.filter(
+            r => r.movimento === "ENTRADA"
+        ).length;
+
+
+    document.getElementById(
+        "totalSaidas"
+    ).textContent =
+        registros.filter(
+            r => r.movimento === "SAÍDA"
+        ).length;
+
+
+    document.getElementById(
+        "totalReentradas"
+    ).textContent =
+        registros.filter(
+            r =>
+                r.movimento ===
+                "ENTRADA NOVAMENTE"
+        ).length;
+
+
+    const lista =
+        document.getElementById(
+            "historicoLista"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if(!registros.length) {
+
+        lista.innerHTML =
+            '<div class="sem-registros">' +
+            'Nenhum registro nesta atividade.' +
+            '</div>';
+
+        return;
+    }
+
+
+    registros
+    .slice(0,8)
+    .forEach(r => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "registro-item";
+
+
+        item.innerHTML = `
+
+            <div>
+
+                <div class="registro-nome">
+                    ${escapar(r.nome)}
+                </div>
+
+                <div class="registro-sub">
+                    ${escapar(r.movimento)}
+                    • ID
+                    ${escapar(r.participante_id)}
+                </div>
+
+            </div>
+
+            <div class="registro-hora">
+                ${escapar(r.hora)}
+            </div>
+        `;
+
+
+        lista.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   DESFAZER ÚLTIMO
+   ========================================================= */
+
+document
+.getElementById("botaoDesfazer")
+.addEventListener(
+    "click",
+    async () => {
+
+        const registros =
+            await registrosAtuais();
+
+
+        if(!registros.length) {
+
+            alert(
+                "Não há registros para desfazer."
+            );
+
+            return;
+        }
+
+
+        const ultimo =
+            registros[0];
+
+
+        const confirmar =
+            confirm(
+                "Desfazer o último registro?\n\n" +
+                ultimo.nome +
+                "\n" +
+                ultimo.movimento +
+                " • " +
+                ultimo.hora
+            );
+
+
+        if(!confirmar) return;
+
+
+        await excluirRegistro(
+            ultimo.registro_id
+        );
+
+
+        mostrarAvisoScan(
+            "REGISTRO DESFEITO",
+            ultimo.nome,
+            ultimo.movimento +
+            " • " +
+            ultimo.hora
+        );
+
+
+        await atualizarHistorico();
+
+    }
+);
+
+
+/* =========================================================
+   CSV
+   ========================================================= */
+
+document
+.getElementById("botaoExportar")
+.addEventListener(
+    "click",
+    exportarCSV
+);
+
+
+async function exportarCSV() {
+
+    const registros =
+        await registrosAtuais();
+
+
+    if(!registros.length) {
+
+        alert(
+            "Ainda não existem registros para exportar."
+        );
+
+        return;
+    }
+
+
+    const cabecalho = [
+
+        "LOTE_ID",
+        "REGISTRO_ID",
+        "ID_PARTICIPANTE",
+        "NOME",
+        "EMAIL",
+        "ID_EVENTO",
+        "EVENTO",
+        "DATA",
+        "TURNO",
+        "HORA",
+        "MOVIMENTO",
+        "ID_MONITOR",
+        "MONITOR"
+
+    ];
+
+
+    const linhas = [
+        cabecalho
+    ];
+
+
+    registros
+    .slice()
+    .reverse()
+    .forEach(r => {
+
+        linhas.push([
+
+            r.lote_id,
+            r.registro_id,
+            r.participante_id,
+            r.nome,
+            r.email,
+            r.id_evento,
+            r.evento,
+            r.data,
+            r.turno,
+            r.hora,
+            r.movimento,
+            r.id_monitor,
+            r.monitor
+
+        ]);
+
+    });
+
+
+    const csv =
+        "\uFEFF" +
+        linhas
+        .map(linha =>
+            linha
+            .map(valor =>
+                csvCampo(valor)
+            )
+            .join(";")
+        )
+        .join("\r\n");
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    const nomeEvento =
+        limparNomeArquivo(
+            eventoSelecionado.NOME
+        );
+
+
+    const nomeMonitor =
+        limparNomeArquivo(
+            monitorLogado.NOME
+        );
+
+
+    link.href = url;
+
+    link.download =
+        nomeEvento +
+        "_" +
+        nomeMonitor +
+        "_" +
+        loteAtual +
+        ".csv";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(url),
+        1000
+    );
+
+}
+
+
+function csvCampo(valor) {
+
+    const texto =
+        String(valor ?? "");
+
+    return (
+        '"' +
+        texto.replace(/"/g,'""') +
+        '"'
+    );
+
+}
+
+
+function limparNomeArquivo(texto) {
+
+    return String(texto || "")
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+    .replace(
+        /[^a-zA-Z0-9]+/g,
+        "_"
+    )
+    .replace(
+        /^_+|_+$/g,
+        ""
+    )
+    .substring(0,60);
+
+}
+
+
+/* =========================================================
+   SINCRONIZAÇÃO DO LOTE
+   ========================================================= */
+
+document
+.getElementById("botaoSincronizar")
+.addEventListener(
+    "click",
+    sincronizarLoteDrive
+);
+
+
+async function sincronizarLoteDrive() {
+
+    const registros =
+        await registrosAtuais();
+
+
+    if(!registros.length) {
+
+        alert(
+            "Não existem registros para sincronizar.\n\n" +
+            "Se a atividade foi selecionada por engano, " +
+            "use CANCELAR SELEÇÃO SEM REGISTROS."
+        );
+
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+            "Sincronizar e encerrar esta atividade?\n\n" +
+            eventoSelecionado.NOME +
+            "\n\n" +
+            registros.length +
+            " registro(s)\n\n" +
+            "Após a confirmação do Drive, " +
+            "as outras atividades serão desbloqueadas."
+        );
+
+
+    if(!confirmar) {
+        return;
+    }
+
+
+    const botao =
+        document.getElementById(
+            "botaoSincronizar"
+        );
+
+
+    const textoOriginal =
+        botao.textContent;
+
+
+    botao.disabled = true;
+
+    botao.textContent =
+        "SINCRONIZANDO...";
+
+
+    try {
+
+        const dadosCompactos =
+            registros.map(r => ({
+
+                lote_id:
+                    r.lote_id,
+
+                registro_id:
+                    r.registro_id,
+
+                participante_id:
+                    r.participante_id,
+
+                nome:
+                    r.nome,
+
+                email:
+                    r.email,
+
+                id_evento:
+                    r.id_evento,
+
+                evento:
+                    r.evento,
+
+                data:
+                    r.data,
+
+                turno:
+                    r.turno,
+
+                hora:
+                    r.hora,
+
+                movimento:
+                    r.movimento,
+
+                id_monitor:
+                    r.id_monitor,
+
+                monitor:
+                    r.monitor
+
+            }));
+
+
+        const json =
+            JSON.stringify(
+                dadosCompactos
+            );
+
+
+        const base64 =
+            textoParaBase64URL(
+                json
+            );
+
+
+        const resposta =
+            await chamadaJSONP({
+
+                acao:
+                    "sincronizar",
+
+                lote_id:
+                    loteAtual,
+
+                id_evento:
+                    eventoSelecionado.ID_EVENTO,
+
+                id_monitor:
+                    monitorLogado.ID_MONITOR,
+
+                dados:
+                    base64
+
+            });
+
+
+        if(
+            !resposta ||
+            resposta.sucesso !== true
+        ) {
+
+            throw new Error(
+                resposta?.erro ||
+                "O servidor não confirmou a sincronização."
+            );
+
+        }
+
+
+        /*
+         * SOMENTE AGORA,
+         * APÓS CONFIRMAÇÃO DO DRIVE,
+         * MARCAMOS COMO SINCRONIZADO.
+         */
+
+        const agora =
+            new Date().toISOString();
+
+
+        for(
+            const registro
+            of registros
+        ) {
+
+            registro.sincronizado =
+                true;
+
+            registro.sincronizado_em =
+                agora;
+
+            await salvarRegistro(
+                registro
+            );
+
+        }
+
+
+        /*
+         * LIBERA ATIVIDADE
+         */
+
+        await definirAtividadeAtiva(
+            null
+        );
+
+
+        pararCamera();
+
+
+        alert(
+            (
+                resposta.ja_existia
+                    ?
+                    "LOTE JÁ ESTAVA SINCRONIZADO"
+                    :
+                    "SINCRONIZAÇÃO CONCLUÍDA"
+            )
+            +
+            "\n\nArquivo: " +
+            resposta.arquivo +
+            "\n\nRegistros: " +
+            resposta.quantidade +
+            "\n\nLote: " +
+            resposta.lote_id
+        );
+
+
+        eventoSelecionado = null;
+        loteAtual = null;
+
+
+        telaScanner.classList.add(
+            "oculto"
+        );
+
+
+        telaEventos.classList.remove(
+            "oculto"
+        );
+
+
+        await renderizarEventos();
+
+    }
+    catch(erro) {
+
+        console.error(
+            "Erro de sincronização:",
+            erro
+        );
+
+
+        alert(
+            "A SINCRONIZAÇÃO NÃO FOI CONFIRMADA.\n\n" +
+            (
+                erro.message ||
+                String(erro)
+            )
+            +
+            "\n\nA atividade continuará bloqueada " +
+            "e os registros permanecerão neste aparelho."
+        );
+
+    }
+    finally {
+
+        botao.disabled = false;
+
+        botao.textContent =
+            textoOriginal;
+
+    }
+
+}
+
+
+/* =========================================================
+   JSONP GENÉRICO
+   ========================================================= */
+
+function chamadaJSONP(parametros) {
+
+    return new Promise(
+        (resolve,reject) => {
+
+            const callback =
+                "__fpbfSync_" +
+                Date.now() +
+                "_" +
+                Math.floor(
+                    Math.random() *
+                    100000
+                );
+
+
+            const script =
+                document.createElement(
+                    "script"
+                );
+
+
+            const timeout =
+                setTimeout(
+                    () => {
+
+                        limpar();
+
+                        reject(
+                            new Error(
+                                "Tempo limite da sincronização."
+                            )
+                        );
+
+                    },
+                    30000
+                );
+
+
+            function limpar() {
+
+                clearTimeout(
+                    timeout
+                );
+
+
+                if(
+                    script.parentNode
+                ) {
+
+                    script.parentNode
+                        .removeChild(
+                            script
+                        );
+
+                }
+
+
+                try {
+
+                    delete window[
+                        callback
+                    ];
+
+                }
+                catch(e) {}
+
+            }
+
+
+            window[
+                callback
+            ] = resposta => {
+
+                limpar();
+
+                resolve(
+                    resposta
+                );
+
+            };
+
+
+            script.onerror =
+                () => {
+
+                    limpar();
+
+                    reject(
+                        new Error(
+                            "Não foi possível acessar o servidor."
+                        )
+                    );
+
+                };
+
+
+            const query =
+                new URLSearchParams();
+
+
+            Object.entries(
+                parametros
+            )
+            .forEach(
+                ([chave,valor]) => {
+
+                    query.set(
+                        chave,
+                        String(valor)
+                    );
+
+                }
+            );
+
+
+            query.set(
+                "callback",
+                callback
+            );
+
+
+            query.set(
+                "t",
+                Date.now()
+            );
+
+
+            script.src =
+                API_URL +
+                "?" +
+                query.toString();
+
+
+            document.head
+                .appendChild(
+                    script
+                );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UTF-8 -> BASE64 URL SAFE
+   ========================================================= */
+
+function textoParaBase64URL(texto) {
+
+    const bytes =
+        new TextEncoder()
+            .encode(texto);
+
+
+    let binario = "";
+
+
+    bytes.forEach(byte => {
+
+        binario +=
+            String.fromCharCode(
+                byte
+            );
+
+    });
+
+
+    return btoa(binario)
+        .replace(/\+/g,"-")
+        .replace(/\//g,"_")
+        .replace(/=+$/,"");
+
+}
+
+
+/* =========================================================
+   CANCELAR ATIVIDADE SEM REGISTROS
+   ========================================================= */
+
+document
+.getElementById(
+    "botaoCancelarAtividade"
+)
+.addEventListener(
+    "click",
+    cancelarAtividadeSemRegistros
+);
+
+
+async function cancelarAtividadeSemRegistros() {
+
+    const registros =
+        await registrosAtuais();
+
+
+    if(
+        registros.length > 0
+    ) {
+
+        alert(
+            "Esta atividade já possui " +
+            registros.length +
+            " registro(s).\n\n" +
+            "Ela não pode mais ser cancelada. " +
+            "Sincronize e encerre a atividade."
+        );
+
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+            "Cancelar esta seleção?\n\n" +
+            eventoSelecionado.NOME +
+            "\n\nComo não existem registros, " +
+            "nenhum dado será perdido."
+        );
+
+
+    if(!confirmar) {
+        return;
+    }
+
+
+    await definirAtividadeAtiva(
+        null
+    );
+
+
+    pararCamera();
+
+
+    eventoSelecionado = null;
+    loteAtual = null;
+
+
+    telaScanner.classList.add(
+        "oculto"
+    );
+
+
+    telaEventos.classList.remove(
+        "oculto"
+    );
+
+
+    await renderizarEventos();
+
+}
+
+/* =========================================================
+   CÂMERA
+   ========================================================= */
+
+async function iniciarCamera() {
+
+    if(cameraRodando) return;
+
+
+    cameraAviso.classList.remove(
+        "oculto"
+    );
+
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        cameraAviso.textContent =
+            "Câmera indisponível neste modo. Use o registro manual.";
+
+        return;
+    }
+
+
+    if(
+        !("BarcodeDetector" in window)
+    ) {
+
+        cameraAviso.textContent =
+            "Leitor QR nativo não disponível. Use o registro manual.";
+
+        return;
+    }
+
+
+    try {
+
+        detectorQR =
+            new BarcodeDetector({
+                formats:["qr_code"]
+            });
+
+
+        cameraStream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+
+                video:{
+                    facingMode:{
+                        ideal:"environment"
+                    }
+                },
+
+                audio:false
+
+            });
+
+
+        videoScanner.srcObject =
+            cameraStream;
+
+
+        await videoScanner.play();
+
+
+        cameraRodando = true;
+
+
+        cameraAviso.textContent =
+            "Aponte para o QR Code.";
+
+
+        setTimeout(() => {
+
+            if(cameraRodando) {
+
+                cameraAviso
+                .classList
+                .add("oculto");
+
+            }
+
+        },1500);
+
+
+        loopLeituraQR();
+
+    }
+    catch(erro) {
+
+        console.error(erro);
+
+        cameraAviso.textContent =
+            "Não foi possível acessar a câmera. O registro manual continua disponível.";
+
+    }
+
+}
+
+
+async function loopLeituraQR() {
+
+    if(!cameraRodando) return;
+
+
+    try {
+
+        if(
+            videoScanner.readyState >= 2 &&
+            detectorQR
+        ) {
+
+            const codigos =
+                await detectorQR.detect(
+                    videoScanner
+                );
+
+
+            if(codigos.length) {
+
+                const codigo =
+                    String(
+                        codigos[0].rawValue
+                        || ""
+                    ).trim();
+
+
+                const agora =
+                    Date.now();
+
+
+                // Após qualquer leitura válida, bloqueia novas leituras por 3 segundos.
+                if(
+                    codigo &&
+                    agora - ultimaLeituraEm >= 3000
+                ) {
+
+                    ultimoCodigo =
+                        codigo;
+
+                    ultimaLeituraEm =
+                        agora;
+
+
+                    emitirBip();
+
+
+                    await processarCodigo(
+                        codigo
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+    catch(e) {
+        console.error(e);
+    }
+
+
+    if(cameraRodando) {
+
+        loopCameraId =
+            requestAnimationFrame(
+                loopLeituraQR
+            );
+
+    }
+
+}
+
+
+function pararCamera() {
+
+    cameraRodando = false;
+
+
+    if(loopCameraId) {
+
+        cancelAnimationFrame(
+            loopCameraId
+        );
+
+        loopCameraId = null;
+
+    }
+
+
+    if(cameraStream) {
+
+        cameraStream
+        .getTracks()
+        .forEach(t => t.stop());
+
+        cameraStream = null;
+
+    }
+
+
+    videoScanner.srcObject = null;
+
+    ultimoCodigo = "";
+    ultimaLeituraEm = 0;
+
+}
+
+
+document
+.getElementById("botaoIniciarCamera")
+.addEventListener(
+    "click",
+    iniciarCamera
+);
+
+
+document
+.getElementById("botaoPararCamera")
+.addEventListener(
+    "click",
+    () => {
+
+        pararCamera();
+
+        cameraAviso.classList.remove(
+            "oculto"
+        );
+
+        cameraAviso.textContent =
+            "Câmera parada.";
+
+    }
+);
+
+
+/* =========================================================
+   VOLTAR
+   ========================================================= */
+
+// Removido - botaoVoltarEventos não existe no HTML
+// Você provavelmente quer voltar dos eventos, que já é feito
+// automaticamente por outros botões
+
+
+/* =========================================================
+   SAIR
+   ========================================================= */
+
+document
+.getElementById("botaoSair")
+.addEventListener(
+    "click",
+    () => {
+
+        pararCamera();
+
+        monitorLogado = null;
+        eventoSelecionado = null;
+        loteAtual = null;
+
+        telaEventos.classList.add(
+            "oculto"
+        );
+
+        telaScanner.classList.add(
+            "oculto"
+        );
+
+        telaLogin.classList.remove(
+            "oculto"
+        );
+
+        document.getElementById(
+            "senha"
+        ).value = "";
+
+    }
+);
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function atualizarConexao() {
+
+    const bolinha =
+        document.getElementById(
+            "bolinhaConexao"
+        );
+
+    const texto =
+        document.getElementById(
+            "textoConexao"
+        );
+
+    const chip =
+        document.getElementById(
+            "chipConexao"
+        );
+
+
+    if(navigator.onLine) {
+
+        bolinha.className =
+            "bolinha online";
+
+        texto.textContent =
+            "Online";
+
+        chip.textContent =
+            "● Online";
+
+    } else {
+
+        bolinha.className =
+            "bolinha offline";
+
+        texto.textContent =
+            "Offline";
+
+        chip.textContent =
+            "● Offline";
+
+    }
+
+}
+
+
+window.addEventListener(
+    "online",
+    atualizarConexao
+);
+
+window.addEventListener(
+    "offline",
+    atualizarConexao
+);
+
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+
+function gerarRegistroId() {
+
+    if(
+        crypto &&
+        crypto.randomUUID
+    ) {
+
+        return crypto.randomUUID();
+
+    }
+
+
+    return (
+        "REG_" +
+        Date.now() +
+        "_" +
+        Math.random()
+        .toString(36)
+        .substring(2,10)
+    );
+
+}
+
+
+function normalizar(valor) {
+
+    return String(valor || "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    );
+
+}
+
+
+function escapar(valor) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(valor ?? "");
+
+    return div.innerHTML;
+
+}
+
+
+function emitirBip() {
+
+    try {
+
+        const AudioContexto =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if(!AudioContexto) return;
+
+        const contexto =
+            new AudioContexto();
+
+        const oscilador =
+            contexto.createOscillator();
+
+        const ganho =
+            contexto.createGain();
+
+        oscilador.type = "sine";
+        oscilador.frequency.value = 1050;
+
+        ganho.gain.setValueAtTime(
+            0.18,
+            contexto.currentTime
+        );
+
+        ganho.gain.exponentialRampToValueAtTime(
+            0.001,
+            contexto.currentTime + 0.12
+        );
+
+        oscilador.connect(ganho);
+        ganho.connect(contexto.destination);
+
+        oscilador.start();
+        oscilador.stop(
+            contexto.currentTime + 0.12
+        );
+
+        oscilador.onended = () => {
+            contexto.close().catch(() => {});
+        };
+
+    }
+    catch(e) {
+        console.warn(
+            "Não foi possível emitir o bip:",
+            e
+        );
+    }
+
+}
+
+
+function vibrarSucesso() {
+
+    if(navigator.vibrate) {
+        navigator.vibrate(100);
+    }
+
+}
+
+
+function vibrarErro() {
+
+    if(navigator.vibrate) {
+        navigator.vibrate(
+            [100,70,100]
+        );
+    }
+
+}
+
+
+/* =========================================================
+   INFORMAÇÕES
+   ========================================================= */
+
+async function atualizarInformacoes() {
+
+    const ultima =
+        await lerConfig(
+            "ultima_sincronizacao"
+        );
+
+
+    if(configuracao.nome_evento) {
+
+        document.getElementById(
+            "nomeEventoTopo"
+        ).textContent =
+            configuracao.nome_evento;
+
+    }
+
+
+    if(configuracao.sigla) {
+
+        document.getElementById(
+            "siglaEventoTopo"
+        ).textContent =
+            configuracao.sigla;
+
+    }
+
+
+    if(configuracao.mensagem_login) {
+
+        document.getElementById(
+            "subtituloLogin"
+        ).textContent =
+            configuracao.mensagem_login;
+
+    }
+
+
+    if(ultima) {
+
+        const texto =
+            new Date(ultima)
+            .toLocaleString("pt-BR");
+
+
+        document.getElementById(
+            "ultimaSincronizacao"
+        ).textContent =
+            "Última sincronização: " +
+            texto;
+
+
+        document.getElementById(
+            "chipAtualizacao"
+        ).textContent =
+            "Base: " +
+            texto;
+
+    }
+
+
+    document.getElementById(
+        "quantidadeInscritos"
+    ).textContent =
+        inscritos.length +
+        " inscritos armazenados";
+
+
+    document.getElementById(
+        "chipInscritos"
+    ).textContent =
+        inscritos.length +
+        " inscritos";
+
+}
+
+
+/* =========================================================
+   INICIAR
+   ========================================================= */
+
+async function iniciar() {
+
+    atualizarConexao();
+
+
+    try {
+
+        textoCarregamento.textContent =
+            "Preparando armazenamento local...";
+
+
+        await abrirBanco();
+
+
+        textoCarregamento.textContent =
+            "Sincronizando dados do evento...";
+
+
+        await sincronizarBase();
+
+
+        await atualizarInformacoes();
+
+
+        telaCarregando.classList.add(
+            "oculto"
+        );
+
+        telaLogin.classList.remove(
+            "oculto"
+        );
+
+
+        document.getElementById(
+            "usuario"
+        ).focus();
+
+    }
+    catch(erro) {
+
+        console.error(erro);
+
+
+        telaCarregando.innerHTML = `
+
+            <div style="
+                font-size:22px;
+                font-weight:bold;
+                color:#8b1e2d;
+                margin-bottom:12px;
+            ">
+                Não foi possível iniciar
+            </div>
+
+            <div style="
+                color:#555;
+                line-height:1.6;
+            ">
+                ${escapar(
+                    erro.message ||
+                    String(erro)
+                )}
+            </div>
+
+            <button
+                onclick="location.reload()"
+                style="
+                    margin-top:20px;
+                    border:0;
+                    padding:12px 18px;
+                    border-radius:9px;
+                    background:#8b1e2d;
+                    color:#fff;
+                    font-weight:bold;
+                "
+            >
+                TENTAR NOVAMENTE
+            </button>
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ABAS MOBILE (somente apresentação; não altera a lógica)
+   ========================================================= */
+function ativarAbaMobile(nome) {
+    document.querySelectorAll(".scanner-tab").forEach(botao => {
+        botao.classList.toggle("ativo", botao.dataset.tab === nome);
+    });
+
+    document.querySelectorAll(".mobile-tab-section").forEach(secao => {
+        secao.classList.toggle(
+            "mobile-tab-hidden",
+            secao.dataset.tabSection !== nome
+        );
+    });
+}
+
+document.querySelectorAll(".scanner-tab").forEach(botao => {
+    botao.addEventListener("click", () => ativarAbaMobile(botao.dataset.tab));
+});
+
+const mediaMobile = window.matchMedia("(max-width:600px)");
+function ajustarAbasAoTamanho() {
+    if(mediaMobile.matches) {
+        const ativa = document.querySelector(".scanner-tab.ativo");
+        ativarAbaMobile(ativa ? ativa.dataset.tab : "scanner");
+    } else {
+        document.querySelectorAll(".mobile-tab-section").forEach(secao =>
+            secao.classList.remove("mobile-tab-hidden")
+        );
+    }
+}
+if(mediaMobile.addEventListener) mediaMobile.addEventListener("change", ajustarAbasAoTamanho);
+else mediaMobile.addListener(ajustarAbasAoTamanho);
+ajustarAbasAoTamanho();
+
+
+iniciar();
+
+</script>
+
+</body>
+</html>
