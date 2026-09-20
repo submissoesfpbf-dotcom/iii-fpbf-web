@@ -1253,7 +1253,7 @@ API
 ========================================================= */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzdDVBCeDmtHqshdy6QdQ215ohn-N0KbxxYELeX3JcsnZVpAgVfmBSUfymBsgtFdbgT3A/exec";
+"https://script.google.com/macros/s/AKfycbyUZPO2gwkReQ0X_up_zx_vhbdl54O3D-9aXkEXyLeogJBIrxL2F3Xi0Omf4j86l1wf7g/exec";
 
 
 /* =========================================================
@@ -1416,7 +1416,7 @@ const req =
 tx.objectStore(nome).getAll();
 
 req.onsuccess =
-() => resolve(req.result \|\| []);
+() => resolve(req.result || []);
 
 req.onerror =
 () => reject(req.error);
@@ -1517,22 +1517,22 @@ await limparStore("eventos");
 
 await salvarLista(
 "inscritos",
-dados.inscritos \|\| []
+dados.inscritos || []
 );
 
 await salvarLista(
 "monitores",
-dados.monitores \|\| []
+dados.monitores || []
 );
 
 await salvarLista(
 "eventos",
-dados.eventos \|\| []
+dados.eventos || []
 );
 
 await salvarConfig(
 "configuracao",
-dados.configuracao \|\| {}
+dados.configuracao || {}
 );
 
 await salvarConfig(
@@ -1546,7 +1546,7 @@ new Date().toISOString()
 async function carregarBaseLocal() {
 
 configuracao =
-await lerConfig("configuracao") \|\| {};
+await lerConfig("configuracao") || {};
 
 inscritos =
 await lerTodos("inscritos");
@@ -1608,11 +1608,11 @@ window[callback] = dados => {
 
 limpar();
 
-if(!dados \|\| dados.sucesso !== true) {
+if(!dados || dados.sucesso !== true) {
 
 reject(
 new Error(
-dados?.erro \|\|
+dados?.erro ||
 "Erro na API."
 )
 );
@@ -1816,7 +1816,7 @@ chipAtividade.classList.add("oculto");
 
 eventos
 .filter(e =>
-!e.ATIVO \|\|
+!e.ATIVO ||
 normalizar(e.ATIVO) === "SIM"
 )
 .forEach(evento => {
@@ -1885,7 +1885,7 @@ selo =
 }
 
 
-card.innerHTML = \`
+card.innerHTML = `
 
 <div class="evento-cabecalho">
 
@@ -1935,7 +1935,7 @@ ${escapar(evento.LOCAL)}
 <button
 class="botao-evento"
 ${
-!credenciamento \|\|
+!credenciamento ||
 bloqueado
 ? "disabled"
 : ""
@@ -1945,15 +1945,15 @@ bloqueado
 ${
 mesmaAtividade
 ? "CONTINUAR ATIVIDADE"
-bloqueado
+: bloqueado
 ? "OUTRA ATIVIDADE EM ANDAMENTO"
-credenciamento
+: credenciamento
 ? "SELECIONAR ATIVIDADE"
 : "CREDENCIAMENTO INDISPONÍVEL"
 }
 
 </button>
-\`;
+`;
 
 
 if(
@@ -2166,7 +2166,7 @@ PROCESSAR PARTICIPANTE
 async function processarCodigo(codigo) {
 
 codigo =
-String(codigo \|\| "")
+String(codigo || "")
 .trim();
 
 
@@ -2280,10 +2280,10 @@ participante_id:
 String(participante.ID),
 
 nome:
-participante.NOME \|\| "",
+participante.NOME || "",
 
 email:
-participante.EMAIL \|\| "",
+participante.EMAIL || "",
 
 id_evento:
 eventoSelecionado.ID_EVENTO,
@@ -2581,7 +2581,7 @@ item.className =
 "registro-item";
 
 
-item.innerHTML = \`
+item.innerHTML = `
 
 <div>
 
@@ -2600,7 +2600,7 @@ ${escapar(r.participante_id)}
 <div class="registro-hora">
 ${escapar(r.hora)}
 </div>
-\`;
+`;
 
 
 lista.appendChild(item);
@@ -2841,7 +2841,7 @@ texto.replace(/"/g,'""') +
 
 function limparNomeArquivo(texto) {
 
-return String(texto \|\| "")
+return String(texto || "")
 .normalize("NFD")
 .replace(
 /[\u0300-\u036f]/g,
@@ -3287,7 +3287,7 @@ cameraAviso.classList.remove(
 
 
 if(
-!navigator.mediaDevices \|\|
+!navigator.mediaDevices ||
 !navigator.mediaDevices.getUserMedia
 ) {
 
@@ -3398,7 +3398,7 @@ if(codigos.length) {
 const codigo =
 String(
 codigos[0].rawValue
-\|\| ""
+|| ""
 ).trim();
 
 
@@ -3606,12 +3606,12 @@ chip.textContent =
 }
 
 
-window\.addEventListener(
+window.addEventListener(
 "online",
 atualizarConexao
 );
 
-window\.addEventListener(
+window.addEventListener(
 "offline",
 atualizarConexao
 );
@@ -3647,7 +3647,7 @@ Math.random()
 
 function normalizar(valor) {
 
-return String(valor \|\| "")
+return String(valor || "")
 .trim()
 .toUpperCase()
 .normalize("NFD")
@@ -3677,8 +3677,8 @@ function emitirBip() {
 try {
 
 const AudioContexto =
-window\.AudioContext \|\|
-window\.webkitAudioContext;
+window.AudioContext ||
+window.webkitAudioContext;
 
 if(!AudioContexto) return;
 
@@ -3875,7 +3875,7 @@ catch(erro) {
 console.error(erro);
 
 
-telaCarregando.innerHTML = \`
+telaCarregando.innerHTML = `
 
 <div style="
 font-size:22px;
@@ -3891,7 +3891,7 @@ color:#555;
 line-height:1.6;
 ">
 ${escapar(
-erro.message \|\|
+erro.message ||
 String(erro)
 )}
 </div>
@@ -3910,7 +3910,7 @@ font-weight:bold;
 >
 TENTAR NOVAMENTE
 </button>
-\`;
+`;
 
 }
 
@@ -3938,7 +3938,7 @@ document.querySelectorAll(".scanner-tab").forEach(botao => {
 botao.addEventListener("click", () => ativarAbaMobile(botao.dataset.tab));
 });
 
-const mediaMobile = window\.matchMedia("(max-width:600px)");
+const mediaMobile = window.matchMedia("(max-width:600px)");
 function ajustarAbasAoTamanho() {
 if(mediaMobile.matches) {
 const ativa = document.querySelector(".scanner-tab.ativo");
@@ -3977,7 +3977,7 @@ const tutorialEtapas = [
 
 function renderizarTutorial(){
 const e=tutorialEtapas[tutorialEtapa];
-document.getElementById("tutorialProgresso").textContent=\`Passo ${tutorialEtapa+1} de ${tutorialEtapas.length}\`;
+document.getElementById("tutorialProgresso").textContent=`Passo ${tutorialEtapa+1} de ${tutorialEtapas.length}`;
 document.getElementById("tutorialIcone").textContent=e.icone;
 document.getElementById("tutorialTitulo").textContent=e.titulo;
 document.getElementById("tutorialTexto").textContent=e.texto;
@@ -4005,7 +4005,7 @@ setTimeout(()=>{clearInterval(esperar);if(!document.getElementById("tutorialOver
 }
 
 function mostrarCarregamentoAcao(texto){
-document.getElementById("acaoLoadingTexto").textContent=texto\|\|"Processando...";
+document.getElementById("acaoLoadingTexto").textContent=texto||"Processando...";
 document.getElementById("acaoLoadingOverlay").classList.remove("oculto");
 }
 function esconderCarregamentoAcao(){document.getElementById("acaoLoadingOverlay").classList.add("oculto");}
