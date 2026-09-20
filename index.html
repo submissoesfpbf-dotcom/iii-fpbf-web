@@ -992,7 +992,6 @@ button:disabled {
         <button id="botaoSair" class="botao-secundario">
             Sair
         </button>
-
     </div>
 
     <div class="barra-base">
@@ -1253,7 +1252,7 @@ button:disabled {
    ========================================================= */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbz0qCpS8byLQY7ZNGdRsHnNrfFGuDHYyfKePq_Hbf0Sa0zD6BqVe2Hi6aPEtfVEE2jIcg/exec";
+"https://script.google.com/macros/s/AKfycbzp8JcgGBrkCcutgXllbZo5nbCjskVgJEIBGFWFoOPpuBzbSlCo2NvuecSIaA8Gq5VLOQ/exec";
 
 
 /* =========================================================
@@ -2876,256 +2875,148 @@ document
 
 async function sincronizarLoteDrive() {
 
-    const registros =
-        await registrosAtuais();
-
+    const registros = await registrosAtuais();
 
     if(!registros.length) {
-
         alert(
             "Não existem registros para sincronizar.\n\n" +
             "Se a atividade foi selecionada por engano, " +
             "use CANCELAR SELEÇÃO SEM REGISTROS."
         );
-
         return;
     }
 
+    const confirmar = confirm(
+        "Sincronizar e encerrar esta atividade?\n\n" +
+        eventoSelecionado.NOME +
+        "\n\n" +
+        registros.length +
+        " registro(s)\n\n" +
+        "Após a confirmação do Drive, " +
+        "as outras atividades serão desbloqueadas."
+    );
 
-    const confirmar =
-        confirm(
-            "Sincronizar e encerrar esta atividade?\n\n" +
-            eventoSelecionado.NOME +
-            "\n\n" +
-            registros.length +
-            " registro(s)\n\n" +
-            "Após a confirmação do Drive, " +
-            "as outras atividades serão desbloqueadas."
-        );
+    if(!confirmar) return;
 
-
-    if(!confirmar) {
-        return;
-    }
-
-
-    const botao =
-        document.getElementById(
-            "botaoSincronizar"
-        );
-
-
-    const textoOriginal =
-        botao.textContent;
-
+    const botao = document.getElementById("botaoSincronizar");
+    const textoOriginal = botao.textContent;
 
     botao.disabled = true;
-
-    botao.textContent =
-        "SINCRONIZANDO...";
-
+    botao.textContent = "SINCRONIZANDO...";
     mostrarCarregamentoAcao("Enviando registros e gerando o CSV no servidor...");
-
 
     try {
 
-        const dadosCompactos =
-            registros.map(r => ({
+        const dadosCompactos = registros.map(r => ({
+            lote_id: r.lote_id,
+            registro_id: r.registro_id,
+            participante_id: r.participante_id,
+            nome: r.nome,
+            email: r.email,
+            id_evento: r.id_evento,
+            evento: r.evento,
+            data: r.data,
+            turno: r.turno,
+            hora: r.hora,
+            movimento: r.movimento,
+            id_monitor: r.id_monitor,
+            monitor: r.monitor
+        }));
 
-                lote_id:
-                    r.lote_id,
+        const payload = {
+            acao: "sincronizar",
+            lote_id: loteAtual,
+            id_evento: eventoSelecionado.ID_EVENTO,
+            id_monitor: monitorLogado.ID_MONITOR,
+            dados: JSON.stringify(dadosCompactos),
+            dados_formato: "json"
+        };
 
-                registro_id:
-                    r.registro_id,
+        /*
+         * POST com text/plain evita uma requisição OPTIONS (preflight),
+         * algo importante quando o HTML é aberto fora do Apps Script.
+         * O doPost(e) recebe e.postData.contents normalmente e faz JSON.parse.
+         */
+        const respostaHttp = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify(payload),
+            redirect: "follow"
+        });
 
-                participante_id:
-                    r.participante_id,
-
-                nome:
-                    r.nome,
-
-                email:
-                    r.email,
-
-                id_evento:
-                    r.id_evento,
-
-                evento:
-                    r.evento,
-
-                data:
-                    r.data,
-
-                turno:
-                    r.turno,
-
-                hora:
-                    r.hora,
-
-                movimento:
-                    r.movimento,
-
-                id_monitor:
-                    r.id_monitor,
-
-                monitor:
-                    r.monitor
-
-            }));
-
-
-        const json =
-            JSON.stringify(
-                dadosCompactos
-            );
-
-
-        const base64 =
-            textoParaBase64URL(
-                json
-            );
-
-
-        const resposta =
-            await chamadaJSONP({
-
-                acao:
-                    "sincronizar",
-
-                lote_id:
-                    loteAtual,
-
-                id_evento:
-                    eventoSelecionado.ID_EVENTO,
-
-                id_monitor:
-                    monitorLogado.ID_MONITOR,
-
-                dados:
-                    base64
-
-            });
-
-
-        if(
-            !resposta ||
-            resposta.sucesso !== true
-        ) {
-
+        if(!respostaHttp.ok) {
             throw new Error(
-                resposta?.erro ||
+                "Falha HTTP " + respostaHttp.status +
+                " ao enviar o lote."
+            );
+        }
+
+        const textoResposta = await respostaHttp.text();
+
+        let resposta;
+        try {
+            resposta = JSON.parse(textoResposta);
+        } catch(e) {
+            throw new Error(
+                "O servidor respondeu, mas a resposta não era JSON válido."
+            );
+        }
+
+        if(!resposta || resposta.sucesso !== true) {
+            throw new Error(
+                (resposta && resposta.erro) ||
                 "O servidor não confirmou a sincronização."
             );
-
         }
 
+        // Só marca localmente depois da confirmação do servidor/Drive.
+        const agora = new Date().toISOString();
 
-        /*
-         * SOMENTE AGORA,
-         * APÓS CONFIRMAÇÃO DO DRIVE,
-         * MARCAMOS COMO SINCRONIZADO.
-         */
-
-        const agora =
-            new Date().toISOString();
-
-
-        for(
-            const registro
-            of registros
-        ) {
-
-            registro.sincronizado =
-                true;
-
-            registro.sincronizado_em =
-                agora;
-
-            await salvarRegistro(
-                registro
-            );
-
+        for(const registro of registros) {
+            registro.sincronizado = true;
+            registro.sincronizado_em = agora;
+            await salvarRegistro(registro);
         }
 
-
-        /*
-         * LIBERA ATIVIDADE
-         */
-
-        await definirAtividadeAtiva(
-            null
-        );
-
-
+        await definirAtividadeAtiva(null);
         pararCamera();
 
-
         alert(
-            (
-                resposta.ja_existia
-                    ?
-                    "LOTE JÁ ESTAVA SINCRONIZADO"
-                    :
-                    "SINCRONIZAÇÃO CONCLUÍDA"
-            )
-            +
-            "\n\nArquivo: " +
-            resposta.arquivo +
-            "\n\nRegistros: " +
-            resposta.quantidade +
-            "\n\nLote: " +
-            resposta.lote_id
+            (resposta.ja_existia
+                ? "LOTE JÁ ESTAVA SINCRONIZADO"
+                : "SINCRONIZAÇÃO CONCLUÍDA") +
+            "\n\nArquivo: " + resposta.arquivo +
+            "\n\nRegistros: " + resposta.quantidade +
+            "\n\nLote: " + resposta.lote_id
         );
-
 
         eventoSelecionado = null;
         loteAtual = null;
 
-
-        telaScanner.classList.add(
-            "oculto"
-        );
-
-
-        telaEventos.classList.remove(
-            "oculto"
-        );
-
+        telaScanner.classList.add("oculto");
+        telaEventos.classList.remove("oculto");
 
         await renderizarEventos();
 
-    }
-    catch(erro) {
+    } catch(erro) {
 
-        console.error(
-            "Erro de sincronização:",
-            erro
-        );
-
+        console.error("Erro de sincronização:", erro);
 
         alert(
             "A SINCRONIZAÇÃO NÃO FOI CONFIRMADA.\n\n" +
-            (
-                erro.message ||
-                String(erro)
-            )
-            +
+            (erro.message || String(erro)) +
             "\n\nA atividade continuará bloqueada " +
             "e os registros permanecerão neste aparelho."
         );
 
-    }
-    finally {
+    } finally {
 
         esconderCarregamentoAcao();
-
         botao.disabled = false;
-
-        botao.textContent =
-            textoOriginal;
-
+        botao.textContent = textoOriginal;
     }
-
 }
 
 
