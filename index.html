@@ -1252,7 +1252,7 @@ button:disabled {
    ========================================================= */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbypFdWM7PvfIUtrIq4jFvHyIIJVbCCj_E5i1_LO2gmZ_dydv5EwE6ssXaqJ7AISsNqZ9g/exec";
+"https://script.google.com/macros/s/AKfycbwbRzi_aiowA2vjM8YjeWlAicAkkaZJujPBnYLekqZ5XCW3qYXD51OLb-uoOctrTNt8Zg/exec";
 
 
 /* =========================================================
@@ -2878,102 +2878,75 @@ async function sincronizarLoteDrive() {
     const registros = await registrosAtuais();
 
     if(!registros.length) {
-        alert(
-            "Não existem registros para sincronizar.\n\n" +
-            "Se a atividade foi selecionada por engano, " +
-            "use CANCELAR SELEÇÃO SEM REGISTROS."
-        );
+        alert("Não existem registros para sincronizar.");
         return;
     }
 
     const confirmar = confirm(
         "Sincronizar e encerrar esta atividade?\n\n" +
-        eventoSelecionado.NOME +
-        "\n\n" +
-        registros.length +
-        " registro(s)\n\n" +
-        "Após a confirmação do Drive, " +
-        "as outras atividades serão desbloqueadas."
+        eventoSelecionado.NOME + "\n\n" +
+        registros.length + " registro(s)\n\n" +
+        "O envio será feito automaticamente em partes."
     );
 
     if(!confirmar) return;
 
     const botao = document.getElementById("botaoSincronizar");
     const textoOriginal = botao.textContent;
-
     botao.disabled = true;
     botao.textContent = "SINCRONIZANDO...";
-    mostrarCarregamentoAcao("Enviando registros e gerando o CSV no servidor...");
 
     try {
+        const TAMANHO_PARTE = 10;
+        const totalPartes = Math.ceil(registros.length / TAMANHO_PARTE);
+        let respostaFinal = null;
 
-        const dadosCompactos = registros.map(r => ({
-            lote_id: r.lote_id,
-            registro_id: r.registro_id,
-            participante_id: r.participante_id,
-            nome: r.nome,
-            email: r.email,
-            id_evento: r.id_evento,
-            evento: r.evento,
-            data: r.data,
-            turno: r.turno,
-            hora: r.hora,
-            movimento: r.movimento,
-            id_monitor: r.id_monitor,
-            monitor: r.monitor
-        }));
+        for(let i = 0; i < totalPartes; i++) {
+            const numeroParte = i + 1;
+            const fatia = registros.slice(i*TAMANHO_PARTE,(i+1)*TAMANHO_PARTE);
 
-        const payload = {
-            acao: "sincronizar",
-            lote_id: loteAtual,
-            id_evento: eventoSelecionado.ID_EVENTO,
-            id_monitor: monitorLogado.ID_MONITOR,
-            dados: JSON.stringify(dadosCompactos),
-            dados_formato: "json"
-        };
-
-        /*
-         * POST com text/plain evita uma requisição OPTIONS (preflight),
-         * algo importante quando o HTML é aberto fora do Apps Script.
-         * O doPost(e) recebe e.postData.contents normalmente e faz JSON.parse.
-         */
-        const respostaHttp = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "text/plain;charset=UTF-8"
-            },
-            body: JSON.stringify(payload),
-            redirect: "follow"
-        });
-
-        if(!respostaHttp.ok) {
-            throw new Error(
-                "Falha HTTP " + respostaHttp.status +
-                " ao enviar o lote."
+            mostrarCarregamentoAcao(
+                "Enviando parte " + numeroParte + " de " + totalPartes + "..."
             );
+
+            const dados = fatia.map(r => ({
+                lote_id:r.lote_id,
+                registro_id:r.registro_id,
+                participante_id:r.participante_id,
+                nome:r.nome,
+                email:r.email,
+                id_evento:r.id_evento,
+                evento:r.evento,
+                data:r.data,
+                turno:r.turno,
+                hora:r.hora,
+                movimento:r.movimento,
+                id_monitor:r.id_monitor,
+                monitor:r.monitor
+            }));
+
+            const resposta = await chamadaJSONP({
+                acao:"sincronizar_parte",
+                lote_id:loteAtual,
+                id_evento:eventoSelecionado.ID_EVENTO,
+                id_monitor:monitorLogado.ID_MONITOR,
+                parte:numeroParte,
+                total_partes:totalPartes,
+                dados:textoParaBase64URL(JSON.stringify(dados))
+            });
+
+            if(!resposta || resposta.sucesso !== true) {
+                throw new Error(resposta?.erro || ("Falha na parte " + numeroParte + "."));
+            }
+
+            respostaFinal = resposta;
         }
 
-        const textoResposta = await respostaHttp.text();
-
-        let resposta;
-        try {
-            resposta = JSON.parse(textoResposta);
-        } catch(e) {
-            throw new Error(
-                "O servidor respondeu, mas a resposta não era JSON válido."
-            );
+        if(!respostaFinal || respostaFinal.finalizado !== true) {
+            throw new Error("O servidor não confirmou a criação do CSV final.");
         }
 
-        if(!resposta || resposta.sucesso !== true) {
-            throw new Error(
-                (resposta && resposta.erro) ||
-                "O servidor não confirmou a sincronização."
-            );
-        }
-
-        // Só marca localmente depois da confirmação do servidor/Drive.
         const agora = new Date().toISOString();
-
         for(const registro of registros) {
             registro.sincronizado = true;
             registro.sincronizado_em = agora;
@@ -2984,35 +2957,27 @@ async function sincronizarLoteDrive() {
         pararCamera();
 
         alert(
-            (resposta.ja_existia
-                ? "LOTE JÁ ESTAVA SINCRONIZADO"
-                : "SINCRONIZAÇÃO CONCLUÍDA") +
-            "\n\nArquivo: " + resposta.arquivo +
-            "\n\nRegistros: " + resposta.quantidade +
-            "\n\nLote: " + resposta.lote_id
+            (respostaFinal.ja_existia ? "LOTE JÁ ESTAVA SINCRONIZADO" : "SINCRONIZAÇÃO CONCLUÍDA") +
+            "\n\nArquivo: " + respostaFinal.arquivo +
+            "\n\nRegistros: " + respostaFinal.quantidade +
+            "\n\nPartes: " + totalPartes +
+            "\n\nLote: " + respostaFinal.lote_id
         );
 
         eventoSelecionado = null;
         loteAtual = null;
-
         telaScanner.classList.add("oculto");
         telaEventos.classList.remove("oculto");
-
         await renderizarEventos();
 
     } catch(erro) {
-
-        console.error("Erro de sincronização:", erro);
-
+        console.error("Erro de sincronização:",erro);
         alert(
-            "A SINCRONIZAÇÃO NÃO FOI CONFIRMADA.\n\n" +
+            "A SINCRONIZAÇÃO NÃO FOI CONCLUÍDA.\n\n" +
             (erro.message || String(erro)) +
-            "\n\nA atividade continuará bloqueada " +
-            "e os registros permanecerão neste aparelho."
+            "\n\nOs registros continuam salvos neste aparelho."
         );
-
     } finally {
-
         esconderCarregamentoAcao();
         botao.disabled = false;
         botao.textContent = textoOriginal;
@@ -4019,59 +3984,6 @@ verificarTutorialPrimeiroAcesso();
 
 iniciar();
 
-// ✅ Copie e cole isto no seu HTML
-async function enviarPeloScriptRun() {
-  const btn = document.getElementById('btnSincronizarPost');
-  if (btn) btn.disabled = true;
-  
-  try {
-    console.log('🚀 Iniciando...');
-    
-    // ⚠️ MUDE ISTO para sua URL:
-    const SCRIPT_URL = 'https://script.google.com/macros/d/SEU_ID_AQUI/usercontent';
-    
-    const registros = [{
-      lote_id: 'LOTE_' + Date.now(),
-      id_evento: 'EVT001',
-      id_monitor: 'MON001',
-      registro_id: 'REG_001',
-      participante_id: 'P_001',
-      nome: 'João Silva',
-      email: 'joao@example.com',
-      evento: 'III FPBF',
-      data: '2024-09-15',
-      turno: 'MATUTINO',
-      hora: '09:30',
-      movimento: 'ENTRADA'
-    }];
-    
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        acao: 'sincronizar',
-        lote_id: registros[0].lote_id,
-        id_evento: 'EVT001',
-        id_monitor: 'MON001',
-        dados: registros,
-        dados_formato: 'json'
-      })
-    });
-    
-    const resultado = await response.json();
-    if (resultado.sucesso) {
-      alert('✅ Sincronizado!\nArquivo: ' + resultado.arquivo);
-    } else {
-      throw new Error(resultado.erro);
-    }
-    if (btn) btn.disabled = false;
-  } catch (erro) {
-    console.error('❌ Erro:', erro);
-    alert('❌ Erro: ' + erro.message);
-    if (btn) btn.disabled = false;
-  }
-}
-    
 </script>
 
 </body>
