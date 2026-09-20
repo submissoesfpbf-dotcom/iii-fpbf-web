@@ -1252,7 +1252,7 @@ button:disabled {
    ========================================================= */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzp8JcgGBrkCcutgXllbZo5nbCjskVgJEIBGFWFoOPpuBzbSlCo2NvuecSIaA8Gq5VLOQ/exec";
+"https://script.google.com/macros/s/AKfycbwO2ZlkpZPPRNy7npPAGmJ3FxcAD3j77pv0E-vVF88pq4_3KhxAi4q0qnWejYNI7LZ9cg/exec";
 
 
 /* =========================================================
@@ -4019,6 +4019,59 @@ verificarTutorialPrimeiroAcesso();
 
 iniciar();
 
+// ✅ Copie e cole isto no seu HTML
+async function enviarPeloScriptRun() {
+  const btn = document.getElementById('btnSincronizarPost');
+  if (btn) btn.disabled = true;
+  
+  try {
+    console.log('🚀 Iniciando...');
+    
+    // ⚠️ MUDE ISTO para sua URL:
+    const SCRIPT_URL = 'https://script.google.com/macros/d/SEU_ID_AQUI/usercontent';
+    
+    const registros = [{
+      lote_id: 'LOTE_' + Date.now(),
+      id_evento: 'EVT001',
+      id_monitor: 'MON001',
+      registro_id: 'REG_001',
+      participante_id: 'P_001',
+      nome: 'João Silva',
+      email: 'joao@example.com',
+      evento: 'III FPBF',
+      data: '2024-09-15',
+      turno: 'MATUTINO',
+      hora: '09:30',
+      movimento: 'ENTRADA'
+    }];
+    
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        acao: 'sincronizar',
+        lote_id: registros[0].lote_id,
+        id_evento: 'EVT001',
+        id_monitor: 'MON001',
+        dados: registros,
+        dados_formato: 'json'
+      })
+    });
+    
+    const resultado = await response.json();
+    if (resultado.sucesso) {
+      alert('✅ Sincronizado!\nArquivo: ' + resultado.arquivo);
+    } else {
+      throw new Error(resultado.erro);
+    }
+    if (btn) btn.disabled = false;
+  } catch (erro) {
+    console.error('❌ Erro:', erro);
+    alert('❌ Erro: ' + erro.message);
+    if (btn) btn.disabled = false;
+  }
+}
+    
 </script>
 
 </body>
